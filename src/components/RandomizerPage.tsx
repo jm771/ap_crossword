@@ -1,12 +1,16 @@
+
 import { useEffect, useState } from "react";
 import { clientStatuses } from "../archipelago";
 import { ClientHandler } from "../archipelago_client_handler";
-import RandomizerConfig from "./Randomizer/RandomizerConfig";
+import { RandomizerConfigState } from "./Randomizer/RandomizerConfig";
 import { RewardsState } from "../shared/types";
+import React from "react";
+import RandomizerGame from "./Randomizer/RandomizerGame";
 
+// Heres'a good place to pick up
   export function RandomizerPage() {
     const [client, setClient] = useState<ClientHandler | null>(null);
-    const [config, setConfig] = useState<RandomizerConfig | null>(null);
+    const [config, setConfig] = useState<RandomizerConfigState | null>(null);
 
     const [rewardState, setRewardState] = useState<RewardsState>({
         sequenceNo: 0,
@@ -22,17 +26,23 @@ import { RewardsState } from "../shared/types";
             setRewardState,
         )
 
-        return 
+        return () => newClient.disconnect()
     },
     [config])
+
+    return (
+    <React.StrictMode>
+         client && ( <RandomizerGame client=client gameModel={mockGameModel} />)
+        </React.StrictMode>
+        )
   }
   
-  componentDidMount() {
+//   componentDidMount() {
 
-    const config = this.getConfig();
-    this.handler = new ClientHandler(
-      this.props.gameModel,
+//     const config = this.getConfig();
+//     this.handler = new ClientHandler(
+//       this.props.gameModel,
 
-      config.nLocations
-    );
-  }
+//       config.nLocations
+//     );
+//   }

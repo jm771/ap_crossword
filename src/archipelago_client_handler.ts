@@ -88,6 +88,10 @@ export class ClientHandler {
     // }
   };
 
+  disconnect() {
+    this.client.disconnect();
+  }
+
   disconnectedListener = (packet: any) => {
     unused(packet);
     console.log('disconnected from archipalego');
