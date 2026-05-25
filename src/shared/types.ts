@@ -4,16 +4,10 @@ export type RewardsState = {
   nCrossLetterRewards: number;
 };
 
-export type RandomizerConfigJson = {
-  slotName: string;
-  archipelagoUrl: string;
-  nLocations: number;
-  nKeyItems: number;
-  nNonKeyItems: number;
-  minStartingClues: number;
-  startingCluesProportion: number;
-  nKeyForAllRevealProportion: number;
-};
+// export type RandomizerConfigJson = {
+//   slotName: string;
+//   archipelagoUrl: string;
+// };
 
 // export type RandomizerStateJson = {
 //   solvedClues: {[clueId: string]: boolean};
@@ -24,7 +18,16 @@ export type RandomizerConfigJson = {
 //   config?: RandomizerConfigJson;
 // };
 
+// Todo = should put this on the slot data
+export interface PuzzleInfo {
+    title: string,
+    author: string,
+    copyright: string,
+    description: string,
+}
+
 export interface GameJson {
+  info: PuzzleInfo
   randomizer?: RandomizerStateJson;
 }
 
@@ -63,9 +66,6 @@ export interface SlotData {
   cross_letters: CrossLetter[]
 }
 
-function unused(thing: any) {}
-
-
 export interface RandomizerState {
   answers: {[clueId: string]: string}; // User's current answer for each clue (local only)
   feedbackClue: ClueId | null; // Which clue is showing feedback
@@ -75,7 +75,7 @@ export interface RandomizerState {
 
 // Remove?
 export type GameModel = {
-  randomizerSubmitAnswer: (clueId: string, isCorrect: boolean) => {};
+  // randomizerSubmitAnswer: (clueId: string, isCorrect: boolean) => {};
   randomizerGetRewards: (state: RewardsState) => {};
-  randomizerUpdateConfig: (config: RandomizerConfigJson) => {};
+  // randomizerUpdateConfig: (config: RandomizerConfigJson) => {};
 };

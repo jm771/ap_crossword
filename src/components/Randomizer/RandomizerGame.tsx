@@ -17,38 +17,6 @@ interface RandomizerGameProps {
 }
 
 
-function UpdateRewards(state: RewardsState, items: any[], index: number): RewardsState {
-  if (!items || !items.length) {
-    return state;
-  }
-
-  let {nClueRewards: nClueRewards, nCrossLetterRewards: nCrossLetterRewards} = state;
-
-  if (index > state.sequenceNo) {
-    throw new Error("Sequence number gap please restart")
-  }
-
-  for (let i = state.sequenceNo - index; i < items.length; i++) {
-    const item = items[i]; // Get the current item
-    console.log(`Got item: ${item.toString()}`);
-    if (item.toString() === 'Clue Unlock') {
-      nClueRewards++;
-    } else if (item.toString() === 'Cross Letter') {
-      nCrossLetterRewards++;
-    } else if (item.toString() === 'Victory') {
-      // do nothing
-    } else {
-      throw new Error("Unknown item")
-    }
-  }
-
-  sequenceNo = index + items.length;
-
-  return {sequenceNo, nClueRewards: nClueRewards, nCrossLetterRewards: nCrossLetterRewards};
-}
-
-
-
 export default class RandomizerGame extends Component<RandomizerGameProps, RandomizerState> {
   handler: ClientHandler | null;
 
@@ -69,25 +37,6 @@ export default class RandomizerGame extends Component<RandomizerGameProps, Rando
       feedbackType: null,
       configDialogOpen: shouldOpenConfig && !hasConfig,
     };
-  }
-
-  componentDidMount() {
-    // Remove openConfig param from URL so refresh doesn't reopen dialog
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('openConfig')) {
-      urlParams.delete('openConfig');
-      const newSearch = urlParams.toString();
-      const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
-      window.history.replaceState({}, '', newUrl);
-    }
-
-    const config = this.getConfig();
-    this.handler = new ClientHandler(
-      this.props.gameModel,
-      config.archipelagoUrl,
-      config.slotName,
-      config.nLocations
-    );
   }
 
   componentDidUpdate(prevProps: RandomizerGameProps) {
