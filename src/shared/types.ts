@@ -1,7 +1,7 @@
 export type RewardsState = {
   sequenceNo: number;
-  nKey: number;
-  nNonKey: number;
+  nClueRewards: number;
+  nCrossLetterRewards: number;
 };
 
 export type RandomizerConfigJson = {
@@ -15,14 +15,14 @@ export type RandomizerConfigJson = {
   nKeyForAllRevealProportion: number;
 };
 
-export type RandomizerStateJson = {
-  solvedClues: {[clueId: string]: boolean};
-  rewardState: RewardsState;
-  wrongAttempts: {[clueId: string]: number};
-  totalWrongAttempts: number;
-  nLocations: number;
-  config?: RandomizerConfigJson;
-};
+// export type RandomizerStateJson = {
+//   solvedClues: {[clueId: string]: boolean};
+//   rewardState: RewardsState;
+//   wrongAttempts: {[clueId: string]: number};
+//   totalWrongAttempts: number;
+//   nLocations: number;
+//   config?: RandomizerConfigJson;
+// };
 
 export interface GameJson {
   randomizer?: RandomizerStateJson;
@@ -33,6 +33,12 @@ export type Direction = "Across" | "Down"
 export interface ClueId {
   direction: Direction
   number: number
+}
+
+export type ClueIdStr = string;
+
+export function clue_id_to_string(clueId: ClueId): ClueIdStr {
+  return `${clueId.direction}-${clueId.number}`
 }
 
 export interface Clue {
@@ -56,3 +62,20 @@ export interface SlotData {
   clues: Clue[]
   cross_letters: CrossLetter[]
 }
+
+function unused(thing: any) {}
+
+
+export interface RandomizerState {
+  answers: {[clueId: string]: string}; // User's current answer for each clue (local only)
+  feedbackClue: ClueId | null; // Which clue is showing feedback
+  feedbackType: 'correct' | 'incorrect' | null;
+  configDialogOpen: boolean;
+}
+
+// Remove?
+export type GameModel = {
+  randomizerSubmitAnswer: (clueId: string, isCorrect: boolean) => {};
+  randomizerGetRewards: (state: RewardsState) => {};
+  randomizerUpdateConfig: (config: RandomizerConfigJson) => {};
+};

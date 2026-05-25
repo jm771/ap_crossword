@@ -21,23 +21,11 @@ interface RandomizerConfigProps {
 export interface RandomizerConfigState {
   slotName: string;
   archipelagoUrl: string;
-  nLocations: number;
-  nKeyItems: number;
-  nNonKeyItems: number;
-  minStartingClues: number;
-  startingCluesProportion: number;
-  nKeyForAllRevealProportion: number;
 }
 
 export const DEFAULT_RANDOMIZER_CONFIG: RandomizerConfigState = {
-  slotName: 'Jack',
+  slotName: 'crossword',
   archipelagoUrl: 'localhost:38281',
-  nLocations: 100,
-  nKeyItems: 20,
-  nNonKeyItems: 80,
-  minStartingClues: 4,
-  startingCluesProportion: 0.1,
-  nKeyForAllRevealProportion: 0.9,
 };
 
 export default class RandomizerConfig extends Component<RandomizerConfigProps, RandomizerConfigState> {
@@ -69,12 +57,6 @@ export default class RandomizerConfig extends Component<RandomizerConfigProps, R
     const {
       slotName,
       archipelagoUrl,
-      nLocations,
-      nKeyItems,
-      nNonKeyItems,
-      minStartingClues,
-      startingCluesProportion,
-      nKeyForAllRevealProportion,
     } = this.state;
 
     return (
@@ -100,86 +82,6 @@ export default class RandomizerConfig extends Component<RandomizerConfigProps, R
               value={archipelagoUrl}
               onChange={this.handleChange('archipelagoUrl')}
               helperText="Server address (e.g., localhost:38281)"
-            />
-          </Box>
-
-          <Divider />
-
-          <Box mt={3} mb={3}>
-            <Typography variant="h6" gutterBottom>
-              Location Settings
-            </Typography>
-            <TextField
-              label="Total Locations"
-              fullWidth
-              margin="normal"
-              type="number"
-              value={nLocations}
-              onChange={this.handleChange('nLocations')}
-              helperText="Total number of locations to check"
-            />
-          </Box>
-
-          <Divider />
-
-          <Box mt={3} mb={3}>
-            <Typography variant="h6" gutterBottom>
-              Item Configuration
-            </Typography>
-            <TextField
-              label="Key Items"
-              fullWidth
-              margin="normal"
-              type="number"
-              value={nKeyItems}
-              onChange={this.handleChange('nKeyItems')}
-              helperText="Number of key items for progression"
-            />
-            <TextField
-              label="Non-Key Items"
-              fullWidth
-              margin="normal"
-              type="number"
-              value={nNonKeyItems}
-              onChange={this.handleChange('nNonKeyItems')}
-              helperText="Number of non-key items (letter reveals)"
-            />
-          </Box>
-
-          <Divider />
-
-          <Box mt={3}>
-            <Typography variant="h6" gutterBottom>
-              Starting Clues
-            </Typography>
-            <TextField
-              label="Minimum Starting Clues"
-              fullWidth
-              margin="normal"
-              type="number"
-              value={minStartingClues}
-              onChange={this.handleChange('minStartingClues')}
-              helperText="Minimum number of clues revealed at start"
-            />
-            <TextField
-              label="Starting Clues Proportion"
-              fullWidth
-              margin="normal"
-              type="number"
-              inputProps={{step: 0.01, min: 0, max: 1}}
-              value={startingCluesProportion}
-              onChange={this.handleChange('startingCluesProportion')}
-              helperText="Proportion of total clues to reveal at start (0.0-1.0)"
-            />
-            <TextField
-              label="Key Items for Full Reveal Proportion"
-              fullWidth
-              margin="normal"
-              type="number"
-              inputProps={{step: 0.01, min: 0, max: 1}}
-              value={nKeyForAllRevealProportion}
-              onChange={this.handleChange('nKeyForAllRevealProportion')}
-              helperText="Proportion of key items needed for full reveal (0.0-1.0)"
             />
           </Box>
         </DialogContent>
