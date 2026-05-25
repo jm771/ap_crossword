@@ -9,7 +9,7 @@ import {
   Typography,
   Box,
   Divider,
-} from '@material-ui/core';
+} from '@mui/material';
 
 interface RandomizerConfigProps {
   open: boolean;

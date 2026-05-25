@@ -2,7 +2,7 @@
 /* eslint-disable */
 import React, {Component} from 'react';
 import {GameJson, RandomizerStateJson, RewardsState, RandomizerConfigJson} from '../../shared/types';
-import {Paper, TextField, Button, Typography, Box, Chip} from '@material-ui/core';
+import {Paper, TextField, Button, Typography, Box, Chip} from '@mui/material';
 import {MdCheckCircle, MdCancel, MdSettings} from 'react-icons/md';
 import './RandomizerGame.css';
 import {Client} from '../../archipelago.js';
