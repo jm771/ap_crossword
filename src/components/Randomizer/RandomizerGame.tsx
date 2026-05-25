@@ -12,20 +12,6 @@ function unused(thing: any) {}
 
 type RewardLetter = {clueId: string; letterIndex: number};
 
-// Utility function to seed a random number generator
-class SeededRandom {
-  private seed: number;
-
-  constructor(seed: number) {
-    this.seed = seed;
-  }
-
-  next(): number {
-    this.seed = (this.seed * 9301 + 49297) % 233280;
-    return this.seed / 233280;
-  }
-}
-
 interface ClueData {
   id: string; // e.g., "across-5" or "down-12"
   direction: 'across' | 'down';
