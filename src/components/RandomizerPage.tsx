@@ -1,18 +1,16 @@
 
 import { useEffect, useState } from "react";
-import { clientStatuses } from "../archipelago";
 import { ClientHandler } from "../archipelago_client_handler";
 import { RandomizerConfigState } from "./Randomizer/RandomizerConfig";
-import { RewardsState, SlotData } from "../shared/types";
+import { ClueId, RewardsState, SlotData } from "../shared/types";
 import React from "react";
 import RandomizerGame from "./Randomizer/RandomizerGame";
 
 // Heres'a good place to pick up
   export function RandomizerPage() {
-    const [client, setClient] = useState<ClientHandler | null>(null);
     const [config, setConfig] = useState<RandomizerConfigState | null>(null);
-    const [slotData, setSlotData] = useState<SlotData | null>(null);
-
+    const [client, setClient] = useState<ClientHandler | null>(null);
+    const [solvedClues, setSolvedClues] = useState<ClueId[]>([]);
     const [rewardState, setRewardState] = useState<RewardsState>({
         sequenceNo: 0,
         nClueRewards: 0,
@@ -22,10 +20,13 @@ import RandomizerGame from "./Randomizer/RandomizerGame";
     useEffect(() => {
         if (config === null) return;
         const newClient = new ClientHandler(
-            config.archipelagoUrl,
-            config.slotName,
             setRewardState,
-        )
+            setSolvedClues
+        );
+
+        newClient.login(config.archipelagoUrl,
+            config.slotName,
+            () => setClient(newClient));
 
         return () => newClient.disconnect()
     },
@@ -33,17 +34,7 @@ import RandomizerGame from "./Randomizer/RandomizerGame";
 
     return (
     <React.StrictMode>
-         {client && slotdata && ( <RandomizerGame client={client} slotdata={undefined} gameModel={undefined}  />)}
+         {client && ( <RandomizerGame client={client} rewards={rewardState} solvedClues={solvedClues}/>)}
         </React.StrictMode>
         );
-  
-  
-//   componentDidMount() {
-//gameModel={mockGameModel}
-//     const config = this.getConfig();
-//     this.handler = new ClientHandler(
-//       this.props.gameModel,
-
-//       config.nLocations
-//     );
-//   }
+    }

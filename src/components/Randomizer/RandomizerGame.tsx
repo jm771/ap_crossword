@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable */
 import React, {Component} from 'react';
-import {GameJson, RandomizerStateJson, RewardsState, RandomizerConfigJson, RandomizerState, ClueData, SlotData} from '../../shared/types';
+import {GameJson, RandomizerStateJson, RewardsState, RandomizerConfigJson, RandomizerState, ClueData, SlotData, ClueId} from '../../shared/types';
 import {Paper, TextField, Button, Typography, Box, Chip} from '@mui/material';
 import {MdCheckCircle, MdCancel, MdSettings} from 'react-icons/md';
 import './RandomizerGame.css';
@@ -11,20 +11,15 @@ import { ClientHandler } from '../../archipelago_client_handler.js';
 
 // Remove?
 interface RandomizerGameProps {
-  slotdata: SlotData
-  client: ClientHandler
-  gameModel: any; // The GameModel instance for syncing state
+  client: ClientHandler,
+  rewards: RewardsState,
+  solvedClues: ClueId[],
 }
 
 
 export default class RandomizerGame extends Component<RandomizerGameProps, RandomizerState> {
-  handler: ClientHandler | null;
-
   constructor(props: RandomizerGameProps) {
     super(props);
-
-    this.handler = null;
-
 
     // Check URL params for openConfig flag (used when navigating from mode selection)
     const urlParams = new URLSearchParams(window.location.search);

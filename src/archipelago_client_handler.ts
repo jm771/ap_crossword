@@ -1,4 +1,4 @@
-import { Client } from "./archipelago";
+import { Client, ConnectedPacket, JSONRecord } from "archipelago.js";
 import { RewardsState, GameModel, SlotData, ClueId } from "./shared/types";
 
 function unused(thing: any) {}
@@ -37,24 +37,33 @@ function UpdateRewards(state: RewardsState, items: any[], index: number): Reward
 type setState<T> = (f: T | ((arg0: T) => T)) => void;
 
 
-
+function cludeIdFromLocId(id: number): ClueId {
+    const IS_DOWN_SPLIT = 10 * 1000;
+  return {
+      direction: id >= IS_DOWN_SPLIT ? "Down" : "Across",
+      number: id % IS_DOWN_SPLIT
+  }
+}
 
 
 
 export class ClientHandler {
-  private client: any;
+  private client: Client;
   private setRewardState: setState<RewardsState>;
+  private setSolvedClues: setState<ClueId[]>;
+  private slotData: SlotData | null;
   // private onConnectItemUnlock: number;
 
   constructor(
-    setSlotData: setState<SlotData>,
     setRewardState: setState<RewardsState>,
     setSolvedClues: setState<ClueId[]>){
-    const client = new Client(null);
+    const client = new Client();
     this.setRewardState = setRewardState;
+    this.setSolvedClues = setSolvedClues
+    
 
     client.items.on('itemsReceived', this.receiveditemsListener);
-    client.socket.on('connected', this.connectedListener);
+    client.room.on('locationsChecked', this.locationsCheckedListener)
     client.socket.on('disconnected', this.disconnectedListener);
     client.socket.on('bounced', this.bouncedListener);
 
@@ -68,39 +77,26 @@ export class ClientHandler {
   }
 
   login(archipelagoUrl: string, slotName: string, callback: () => void) {
-        this.client
+       this.client
       .login(archipelagoUrl, slotName, 'Crossword', undefined)
-      .then(() => {
+      .then((slotData: JSONRecord) => {
+        this.slotData = slotData;
         console.log('Connected to the Archipelago server!');
-        callback();
       })
       .catch(console.error);
+
   }
 
-  connectedListener = (packet: any) => {
-    // apstatus = "AP: Connected";
-
-    // window.apseed = packet.slot_data.seed_name;
-    // window.slot = packet.slot;
-
-    console.log(packet);
-
-    // I need to change the python to change this if I want to recieve it
-
-    // const apworld = packet.slot_data.ap_world_version;
-    // if (!apworld || ['0.0.0'].includes(apworld)) {
-    //   alert('Wrong apworld version, expected 0.0.0, got ' + apworld);
-    // } else {
-    //   console.log('This apworld version should work', packet.slot_data.ap_world_version);
-    // }
-  };
+  locationsCheckedListener = (locations: number[]) => {
+    const cluesSolved = locations.map(cludeIdFromLocId)
+    this.setSolvedClues(cluesSolved);
+  }
 
   disconnect() {
-    this.client.disconnect();
+    this.client.socket.disconnect();
   }
 
-  disconnectedListener = (packet: any) => {
-    unused(packet);
+  disconnectedListener = () => {
     console.log('disconnected from archipalego');
   };
 
@@ -124,22 +120,17 @@ export class ClientHandler {
     });
   };
 
+  solveClue(clue_id: ClueId) {
+    console.log(`sending check ${i}`);
+    this.client.check(i);
 
-  solveClueBundle(i: number) {
-    if (this.connected) {
-      console.log(`sending check ${i}`);
-      this.client.check(i);
-
-      if (i >= this.nLocations) {
-        this.client.goal();
-      }
-    } else {
-      this.onConnectItemUnlock = Math.max(this.onConnectItemUnlock, i);
+    if (i >= this.nLocations) {
+      this.client.goal();
     }
   }
 }
 
-export function makeClientHandler(archipelagoUrl: string, slotName: string, callback: setState<ClientHandler>): void
+export function makeConnectClient(archipelagoUrl: string, slotName: string, callback: setState<ClientHandler>): void
 {
-  const client = new ClientHandler()
+  
 }
