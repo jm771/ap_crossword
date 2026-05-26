@@ -1,5 +1,5 @@
 import { Client } from "./archipelago";
-import { RewardsState, GameModel } from "./shared/types";
+import { RewardsState, GameModel, SlotData, ClueId } from "./shared/types";
 
 function unused(thing: any) {}
 
@@ -33,17 +33,23 @@ function UpdateRewards(state: RewardsState, items: any[], index: number): Reward
   return {sequenceNo, nClueRewards: nClueRewards, nCrossLetterRewards: nCrossLetterRewards};
 }
 
-type setState<T> = (f: (arg0: T) => T) => void;
+// Just the react set state type but not hard coupled
+type setState<T> = (f: T | ((arg0: T) => T)) => void;
+
+
+
 
 
 
 export class ClientHandler {
   private client: any;
   private setRewardState: setState<RewardsState>;
-  private connected: boolean;
-  private onConnectItemUnlock: number;
+  // private onConnectItemUnlock: number;
 
-  constructor(archipelagoUrl: string, slotName: string, setRewardState: setState<RewardsState>){
+  constructor(
+    setSlotData: setState<SlotData>,
+    setRewardState: setState<RewardsState>,
+    setSolvedClues: setState<ClueId[]>){
     const client = new Client(null);
     this.setRewardState = setRewardState;
 
@@ -56,20 +62,21 @@ export class ClientHandler {
     // client.deathLink.on('deathReceived', deathListener);
 
     this.client = client;
-    this.connected = false;
-    this.onConnectItemUnlock = 0;
+    // client.storage
+    // TODO
+    //client.scout... or check?
+  }
 
-    this.client
+  login(archipelagoUrl: string, slotName: string, callback: () => void) {
+        this.client
       .login(archipelagoUrl, slotName, 'Crossword', undefined)
       .then(() => {
         console.log('Connected to the Archipelago server!');
-        this.connected = true;
-        if (this.onConnectItemUnlock) {
-          this.solveClueBundle(this.onConnectItemUnlock);
-        }
+        callback();
       })
       .catch(console.error);
   }
+
   connectedListener = (packet: any) => {
     // apstatus = "AP: Connected";
 
@@ -117,7 +124,7 @@ export class ClientHandler {
     });
   };
 
-  // TODO fix
+
   solveClueBundle(i: number) {
     if (this.connected) {
       console.log(`sending check ${i}`);
@@ -130,4 +137,9 @@ export class ClientHandler {
       this.onConnectItemUnlock = Math.max(this.onConnectItemUnlock, i);
     }
   }
+}
+
+export function makeClientHandler(archipelagoUrl: string, slotName: string, callback: setState<ClientHandler>): void
+{
+  const client = new ClientHandler()
 }
