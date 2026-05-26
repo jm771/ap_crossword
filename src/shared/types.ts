@@ -70,7 +70,6 @@ export interface RandomizerState {
   answers: {[clueId: string]: string}; // User's current answer for each clue (local only)
   feedbackClue: ClueId | null; // Which clue is showing feedback
   feedbackType: 'correct' | 'incorrect' | null;
-  configDialogOpen: boolean;
 }
 
 // Remove?

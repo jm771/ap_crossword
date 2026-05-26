@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import RandomizerGame from './components/Randomizer/RandomizerGame';
 import {GameJson} from './shared/types';
+import { GameHeader } from './components/GameHeader';
+import RandomizerConfig from './components/Randomizer/RandomizerConfig';
+import { RandomizerPage } from './components/RandomizerPage';
 
 
 const mockGame: GameJson = {
@@ -43,7 +46,7 @@ const mockGameModel = {
 function render() {
   ReactDOM.render(
     <React.StrictMode>
-      <RandomizerGame slotdata= client= gameModel={mockGameModel} />
+      <RandomizerPage/>
     </React.StrictMode>,
     document.getElementById('root')
   );

@@ -21,16 +21,10 @@ export default class RandomizerGame extends Component<RandomizerGameProps, Rando
   constructor(props: RandomizerGameProps) {
     super(props);
 
-    // Check URL params for openConfig flag (used when navigating from mode selection)
-    const urlParams = new URLSearchParams(window.location.search);
-    const shouldOpenConfig = urlParams.get('openConfig') === '1';
-    const hasConfig = !!this.randomizerState.config;
-
     this.state = {
       answers: {},
       feedbackClue: null,
       feedbackType: null,
-      configDialogOpen: shouldOpenConfig && !hasConfig,
     };
   }
 
@@ -54,23 +48,6 @@ export default class RandomizerGame extends Component<RandomizerGameProps, Rando
       this.handler?.solveClueBundle(i);
     }
   }
-
-  // Get config with defaults
-  getConfig(): RandomizerConfigJson {
-    return this.randomizerState.config || DEFAULT_RANDOMIZER_CONFIG;
-  }
-
-  handleOpenConfig = () => {
-    this.setState({configDialogOpen: true});
-  };
-
-  handleCloseConfig = () => {
-    this.setState({configDialogOpen: false});
-  };
-
-  handleSaveConfig = (config: RandomizerConfigState) => {
-    this.props.gameModel.randomizerUpdateConfig(config);
-  };
 
   // Hash a string to get a consistent seed
   hashString(str: string): number {
@@ -213,37 +190,6 @@ export default class RandomizerGame extends Component<RandomizerGameProps, Rando
     }
 
     return (
-      <div className="randomizer-game">
-        <RandomizerConfig
-          open={configDialogOpen}
-          onClose={this.handleCloseConfig}
-          onSave={this.handleSaveConfig}
-          initialConfig={config}
-        />
-        <Box className="randomizer-header" p={2}>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h4">Crossword Randomizer</Typography>
-            <Box display="flex" style={{gap: '8px'}}>
-              <Button
-                variant="outlined"
-                color="primary"
-                size="small"
-                startIcon={<MdSettings />}
-                onClick={this.handleOpenConfig}
-              >
-                Config
-              </Button>
-            </Box>
-          </Box>
-          <Box display="flex" style={{gap: '16px', marginTop: '16px'}}>
-            <Chip label={`Solved: ${solvedCount} / ${totalClues}`} color="primary" />
-            <Chip label={`Wrong Attempts: ${totalWrongAttempts}`} color="secondary" />
-          </Box>
-          <Typography variant="body2" color="textSecondary" style={{marginTop: '8px'}}>
-            Solve clues to earn letter reveals in other clues. Clues are in random order.
-          </Typography>
-        </Box>
-
         <Box className="clues-container" p={2}>
           {shuffledClues.map((clue, index) => {
             const isSolved = solvedClues[clue.id];
@@ -314,7 +260,6 @@ export default class RandomizerGame extends Component<RandomizerGameProps, Rando
             );
           })}
         </Box>
-      </div>
     );
   }
 }
