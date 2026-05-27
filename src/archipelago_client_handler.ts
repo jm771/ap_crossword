@@ -1,5 +1,5 @@
 import { Client, ConnectedPacket, JSONRecord } from "archipelago.js";
-import { RewardsState, GameModel, SlotData, ClueId } from "./shared/types";
+import { RewardsState, GameModel, SlotData, ClueId, NotNull } from "./shared/types";
 
 function unused(thing: any) {}
 
@@ -127,6 +127,10 @@ export class ClientHandler {
     if (i >= this.nLocations) {
       this.client.goal();
     }
+  }
+
+  getSlotData(): SlotData {
+    return NotNull(this.slotData);
   }
 }
 

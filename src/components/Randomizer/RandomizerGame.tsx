@@ -1,12 +1,10 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable */
 import React, {Component, useState} from 'react';
-import {GameJson, RandomizerStateJson, RewardsState, RandomizerConfigJson, RandomizerState, ClueData, SlotData, ClueId, ClueIdStr, clue_id_to_string, Clue, clue_to_id_string} from '../../shared/types';
+import {RewardsState, SlotData, ClueId, ClueIdStr, clue_id_to_string, Clue, CrossLetter} from '../../shared/types';
 import {Paper, TextField, Button, Typography, Box, Chip} from '@mui/material';
 import {MdCheckCircle, MdCancel, MdSettings} from 'react-icons/md';
 import './RandomizerGame.css';
-import {Client} from '../../archipelago.js';
-import RandomizerConfig, {RandomizerConfigState, DEFAULT_RANDOMIZER_CONFIG} from './RandomizerConfig';
 import { ClientHandler } from '../../archipelago_client_handler.js';
 
 // Remove?
@@ -16,31 +14,19 @@ interface RandomizerGameProps {
   solvedClues: ClueId[],
 }
 
+class DefaultMap<K, V> extends Map<K, V> {
+  constructor(private createDefault: () => V) {
+    super();
+  }
 
-// export default class RandomizerGame extends Component<RandomizerGameProps, RandomizerState> {
-//   constructor(props: RandomizerGameProps) {
-//     super(props);
+  getOrCreate(key: K): V {
+    if (!this.has(key)) {
+      this.set(key, this.createDefault());
+    }
 
-//     this.state = {
-//       answers: {},
-//       feedbackClue: null,
-//       feedbackType: null,
-//     };
-//   }
-
-//   componentDidUpdate(prevProps: RandomizerGameProps) {
-//     const prevConfig = prevProps?.game?.randomizer?.config;
-//     const newConfig = this.props?.game?.randomizer?.config;
-
-//     // Update handler config if it changed
-//     if (prevConfig !== newConfig && newConfig && this.handler) {
-//       this.handler = new ClientHandler(
-//         this.props.gameModel,
-//         newConfig.archipelagoUrl,
-//         newConfig.slotName,
-//         newConfig.nLocations
-//       );
-//     }
+    return this.get(key)!;
+  }
+}
 
 type Feedback = 'correct' | 'incorrect' | null;
 
@@ -112,7 +98,7 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
     }, 2000);
   };
 
-  const handleForceSolve = (clue: ClueData) => {
+  const handleForceSolve = (clue: Clue) => {
     const confirmed = window.confirm(`Are you sure you want to force solve this clue?`);
 
     if (confirmed) {
@@ -127,73 +113,52 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
     }
   };
 
+    // const solvedCount = Object.keys(solvedClues).filter((id) => solvedClues[id]).length;
 
+    const slotdata = client.getSlotData();
+    const nCrossLetters = Math.floor(slotdata.cross_letters_per_reward * rewards.nCrossLetterRewards);
+    const nRevealedClues = slotdata.n_starting_clues + (slotdata.clues_per_reward * rewards.nClueRewards);
 
-  render() {
-    const config = this.getConfig();
-    const {
-      nKeyItems: N_KEY_ITEMS,
-      nNonKeyItems: N_NON_KEY_ITEMS,
-      minStartingClues: MIN_STARTING_CLUES,
-      startingCluesProportion: STARTING_CLUES_PROPORTION,
-      nKeyForAllRevealProportion: N_KEY_FOR_ALL_REVEAL_PROPORTION,
-    } = config;
+    const revealedLetterIndicies = new DefaultMap<string, number[]>(() => []);
+    slotdata.cross_letters.slice(0, nCrossLetters).forEach(cl => {
+      revealedLetterIndicies.getOrCreate(clue_id_to_string(cl.clue_id)).push(cl.index);
+    });
 
-    const {answers, configDialogOpen} = this.state;
-    const clues = this.props.slotdata.clues
-    const {solvedClues, wrongAttempts, totalWrongAttempts, rewardState} = this.randomizerState;
-    console.log(`Rendering with rewardState=${JSON.stringify(rewardState)}`);
-    const totalClues = clues
-    const solvedCount = Object.keys(solvedClues).filter((id) => solvedClues[id]).length;
-    const {nNonKey, nKey} = rewardState;
-
-    const freebies = Math.max(MIN_STARTING_CLUES, Math.ceil(totalClues * STARTING_CLUES_PROPORTION));
-    const nRevealed =
-      freebies +
-      Math.floor(((totalClues - freebies) * nKey) / (N_KEY_ITEMS * N_KEY_FOR_ALL_REVEAL_PROPORTION));
-
-    let revealedLetters: {[clueId: string]: number[]} = {};
-    const nRecievedLetters = Math.floor((rewardAllocations.length * nNonKey) / N_NON_KEY_ITEMS);
-
-    for (let i = 0; i < nRecievedLetters; i++) {
-      let {clueId, letterIndex} = rewardAllocations[i];
-      if (!revealedLetters[clueId]) {
-        revealedLetters[clueId] = [];
-      }
-
-      revealedLetters[clueId].push(letterIndex);
-    }
+    const solvedClueStrSet = new Set(solvedClues.map(clue_id_to_string));
 
     return (
         <Box className="clues-container" p={2}>
-          {shuffledClues.map((clue, index) => {
-            const isSolved = solvedClues[clue.id];
-            const attempts = wrongAttempts[clue.id] || 0;
-            const isRevealed = index < nRevealed;
+          {slotdata.clues.map((clue, index) => {
+            const clueIdStr = clue_id_to_string(clue);
+            const isSolved = solvedClueStrSet.has(clueIdStr);
+            const isUncensored = index < nRevealedClues;
             const clasified = '█';
-            const halfLength = clue.text.length >> 1;
-            const censoredClue = isRevealed
-              ? clue.text
-              : clue.text.substring(0, halfLength) + clasified.repeat((clue.text.length - halfLength) >> 1);
+            const halfLength = clue.clue.length >> 1;
+            const censoredClue = isUncensored
+              ? clue.clue
+              : clue.clue.substring(0, halfLength) + clasified.repeat((clue.clue.length - halfLength) >> 1);
+            
 
+            const feedback = (feedbackClue?.direction === clue.direction && feedbackClue.number === clue.number) ? feedbackType : null;
+            const lettersForClue = revealedLetterIndicies.getOrCreate(clueIdStr);
             return (
-              <Paper key={clue.id} className="clue-card" elevation={2}>
+              <Paper key={clueIdStr} className="clue-card" elevation={2}>
                 <Box p={2}>
                   <Typography variant="body1" className="clue-text">
                     {censoredClue}
                   </Typography>
                   <Typography variant="caption" color="textSecondary">
-                    {isRevealed && (
+                    {isUncensored && (
                       <>
                         {' '}
                         {clue.direction}
                         {' clue'}
                       </>
                     )}
-                    {attempts > 0 && ` • ${attempts} wrong attempt${attempts > 1 ? 's' : ''}`}
+                    {/* {attempts > 0 && ` • ${attempts} wrong attempt${attempts > 1 ? 's' : ''}`} */}
                   </Typography>
 
-                  {this.renderAnswerBox(clue, revealedLetters)}
+                  <AnswerBox clue={clue} isSolved={isSolved} feedback={feedback} revealedLetters={lettersForClue}/>
 
                   {!isSolved && (
                     <Box display="flex" style={{marginTop: '16px', gap: '8px'}}>
@@ -202,11 +167,11 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
                         size="small"
                         fullWidth
                         placeholder="Enter answer"
-                        value={answers[clue.id] || ''}
-                        onChange={(e) => this.handleAnswerChange(clue.id, e.target.value)}
+                        value={answers[clueIdStr] || ''}
+                        onChange={(e) => handleAnswerChange(clue, e.target.value)}
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') {
-                            this.handleSubmit(clue);
+                            handleSubmit(clue);
                           }
                         }}
                         disabled={isSolved}
@@ -214,8 +179,8 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => this.handleSubmit(clue)}
-                        disabled={isSolved || !answers[clue.id]}
+                        onClick={() => handleSubmit(clue)}
+                        disabled={isSolved || !answers[clueIdStr]}
                       >
                         Submit
                       </Button>
@@ -223,7 +188,7 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
                         variant="outlined"
                         color="secondary"
                         size="small"
-                        onClick={() => this.handleForceSolve(clue)}
+                        onClick={() => handleForceSolve(clue)}
                         disabled={isSolved}
                       >
                         Force

@@ -55,7 +55,6 @@ export interface CrossLetter {
   clue_id: ClueId
   index: number
   value: string
-
 }
 
 export interface SlotData {
@@ -64,4 +63,12 @@ export interface SlotData {
   cross_letters_per_reward: number
   clues: Clue[]
   cross_letters: CrossLetter[]
+}
+
+export function NotNull<T>(val : T | undefined | null): T {
+  if (val == null) {
+    throw Error("Value was null");
+  }
+
+  return val;
 }
