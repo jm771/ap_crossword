@@ -44,6 +44,17 @@ export function clue_id_to_string(clueId: ClueId): ClueIdStr {
   return `${clueId.direction}-${clueId.number}`
 }
 
+export const MAX_N_CLUES = 1000;
+export const LOCATION_OFFSET = 10 * MAX_N_CLUES;
+
+export function clue_id_to_loc_id(clueId: ClueId): number {
+  return clueId.number + clueId.direction == 'down' ? LOCATION_OFFSET : 0;
+}
+
+// export function loc_id_to_clue_id(locId: number): ClueId  {
+//   return clueId.number + clueId.direction == 'down' ? LOCATION_OFFSET : 0;
+// }
+
 export interface Clue {
   direction: Direction
   number: number

@@ -1,5 +1,5 @@
 import { Client, ConnectedPacket, JSONRecord } from "archipelago.js";
-import { RewardsState, GameModel, SlotData, ClueId, NotNull } from "./shared/types";
+import { RewardsState, GameModel, SlotData, ClueId, NotNull, LOCATION_OFFSET, MAX_N_CLUES, clue_id_to_loc_id } from "./shared/types";
 
 function unused(thing: any) {}
 
@@ -50,16 +50,16 @@ function cludeIdFromLocId(id: number): ClueId {
 export class ClientHandler {
   private client: Client;
   private setRewardState: setState<RewardsState>;
-  private setSolvedClues: setState<ClueId[]>;
+  private setFoundLocations: setState<Set<number>>;
   private slotData: SlotData | null;
-  // private onConnectItemUnlock: number;
 
   constructor(
     setRewardState: setState<RewardsState>,
-    setSolvedClues: setState<ClueId[]>){
+    setFoundLocations: setState<Set<number>>){
     const client = new Client();
     this.setRewardState = setRewardState;
-    this.setSolvedClues = setSolvedClues
+    this.setFoundLocations = setFoundLocations;
+    this.slotData = null;
     
 
     client.items.on('itemsReceived', this.receiveditemsListener);
@@ -71,9 +71,6 @@ export class ClientHandler {
     // client.deathLink.on('deathReceived', deathListener);
 
     this.client = client;
-    // client.storage
-    // TODO
-    //client.scout... or check?
   }
 
   login(archipelagoUrl: string, slotName: string, callback: () => void) {
@@ -88,8 +85,18 @@ export class ClientHandler {
   }
 
   locationsCheckedListener = (locations: number[]) => {
-    const cluesSolved = locations.map(cludeIdFromLocId)
-    this.setSolvedClues(cluesSolved);
+    this.setFoundLocations(old => {
+      const newSet = new Set(old);
+      locations.forEach(x => { if(x <= LOCATION_OFFSET + MAX_N_CLUES) {
+        newSet.add(x);
+      }});
+
+      if (newSet.size >= (this.slotData?.clues?.length ?? LOCATION_OFFSET * 10)) {
+        this.client.goal();
+      }
+
+      return newSet;
+    });
   }
 
   disconnect() {
@@ -121,20 +128,12 @@ export class ClientHandler {
   };
 
   solveClue(clue_id: ClueId) {
+    const i = clue_id_to_loc_id(clue_id);
     console.log(`sending check ${i}`);
     this.client.check(i);
-
-    if (i >= this.nLocations) {
-      this.client.goal();
-    }
   }
 
   getSlotData(): SlotData {
     return NotNull(this.slotData);
   }
-}
-
-export function makeConnectClient(archipelagoUrl: string, slotName: string, callback: setState<ClientHandler>): void
-{
-  
 }

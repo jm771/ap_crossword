@@ -4,7 +4,7 @@ import { ClientHandler } from "../archipelago_client_handler";
 import RandomizerConfig, { DEFAULT_RANDOMIZER_CONFIG, RandomizerConfigState } from "./Randomizer/RandomizerConfig";
 import { ClueId, RewardsState, SlotData } from "../shared/types";
 import React from "react";
-import RandomizerGame from "./Randomizer/RandomizerGame";
+import { RandomizerGame } from "./Randomizer/RandomizerGame";
 import { GameHeader } from "./GameHeader";
 
 // Heres'a good place to pick up
@@ -13,7 +13,7 @@ import { GameHeader } from "./GameHeader";
     // TODO save config into cookies
     const [config, setConfig] = useState<RandomizerConfigState>(DEFAULT_RANDOMIZER_CONFIG);
     const [client, setClient] = useState<ClientHandler | null>(null);
-    const [solvedClues, setSolvedClues] = useState<ClueId[]>([]);
+    const [visitedLocations, setVisitedLocations] = useState<Set<number>>(new Set());
     const [rewardState, setRewardState] = useState<RewardsState>({
         sequenceNo: 0,
         nClueRewards: 0,
@@ -24,7 +24,7 @@ import { GameHeader } from "./GameHeader";
         if (config === null) return;
         const newClient = new ClientHandler(
             setRewardState,
-            setSolvedClues
+            setVisitedLocations
         );
 
         newClient.login(config.archipelagoUrl,
@@ -45,7 +45,7 @@ import { GameHeader } from "./GameHeader";
           initialConfig={config}
         />
          <GameHeader handleOpenConfig={() => setConfigOpen(true) }/>
-         {client && ( <RandomizerGame client={client} rewards={rewardState} solvedClues={solvedClues}/>)}
+         {client && ( <RandomizerGame client={client} rewards={rewardState} visitedLocations={visitedLocations}/>)}
          </div>
         </React.StrictMode>
         );

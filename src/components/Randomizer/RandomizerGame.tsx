@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable */
 import React, {Component, useState} from 'react';
-import {RewardsState, SlotData, ClueId, ClueIdStr, clue_id_to_string, Clue, CrossLetter} from '../../shared/types';
+import {RewardsState, SlotData, ClueId, ClueIdStr, clue_id_to_string, Clue, CrossLetter, clue_id_to_loc_id} from '../../shared/types';
 import {Paper, TextField, Button, Typography, Box, Chip} from '@mui/material';
 import {MdCheckCircle, MdCancel, MdSettings} from 'react-icons/md';
 import './RandomizerGame.css';
@@ -11,7 +11,7 @@ import { ClientHandler } from '../../archipelago_client_handler.js';
 interface RandomizerGameProps {
   client: ClientHandler,
   rewards: RewardsState,
-  solvedClues: ClueId[],
+  visitedLocations: Set<number>,
 }
 
 class DefaultMap<K, V> extends Map<K, V> {
@@ -69,7 +69,7 @@ function AnswerBox({clue,  isSolved, feedback, revealedLetters}:{clue: Clue, isS
 }
 
 
-export function RandomizerGame({client, rewards, solvedClues}: RandomizerGameProps)
+export function RandomizerGame({client, rewards, visitedLocations}: RandomizerGameProps)
 {
   const [answers, setAnswers] = useState<{ [key: ClueIdStr]: string }>({});
   const [feedbackClue, setFeedbackClue] = useState<ClueId | null>(null);
@@ -80,6 +80,7 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
       ...last,
       [clue_id_to_string(clueId)]: value.toUpperCase().trim(),
     }});
+  }
   
 
   const handleSubmit = (clue: Clue) => {
@@ -124,13 +125,11 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
       revealedLetterIndicies.getOrCreate(clue_id_to_string(cl.clue_id)).push(cl.index);
     });
 
-    const solvedClueStrSet = new Set(solvedClues.map(clue_id_to_string));
-
     return (
         <Box className="clues-container" p={2}>
           {slotdata.clues.map((clue, index) => {
             const clueIdStr = clue_id_to_string(clue);
-            const isSolved = solvedClueStrSet.has(clueIdStr);
+            const isSolved = visitedLocations.has(clue_id_to_loc_id(clue));
             const isUncensored = index < nRevealedClues;
             const clasified = '█';
             const halfLength = clue.clue.length >> 1;
@@ -201,5 +200,4 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
           })}
         </Box>
     );
-  }
 }
