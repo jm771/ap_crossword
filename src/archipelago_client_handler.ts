@@ -52,13 +52,17 @@ export class ClientHandler {
   private setRewardState: setState<RewardsState>;
   private setFoundLocations: setState<Set<number>>;
   private slotData: SlotData | null;
+  private errorCallback: (arg: string) => void;
 
   constructor(
     setRewardState: setState<RewardsState>,
-    setFoundLocations: setState<Set<number>>){
+    setFoundLocations: setState<Set<number>>,
+    errorCallback: (arg: string) => void)
+  {
     const client = new Client();
     this.setRewardState = setRewardState;
     this.setFoundLocations = setFoundLocations;
+    this.errorCallback = errorCallback;
     this.slotData = null;
     
 
@@ -73,15 +77,15 @@ export class ClientHandler {
     this.client = client;
   }
 
-  login(archipelagoUrl: string, slotName: string, callback: (a: boolean, b: any) => void) {
+  login(archipelagoUrl: string, slotName: string, callback: () => void) {
        this.client
       .login(archipelagoUrl, slotName, 'Crossword', undefined)
       .then((slotData: JSONRecord) => {
         this.slotData = slotData;
         console.log('Connected to the Archipelago server!');
-        callback(true, null);
+        callback();
       })
-      .catch((e) => callback(false, e));
+      .catch((e) => this.errorCallback(`${e}`));
 
   }
 
@@ -105,12 +109,12 @@ export class ClientHandler {
   }
 
   disconnectedListener = () => {
-    console.log('disconnected from archipalego');
+    this.errorCallback('disconnected from archipalego');
   };
 
   bouncedListener = (packet: any) => {
     unused(packet);
-    console.log('bounced from archipalego');
+    this.errorCallback('bounced from archipelago');
   };
 
   receiveditemsListener = (items: any, index: number) => {
@@ -131,7 +135,11 @@ export class ClientHandler {
   solveClue(clue_id: ClueId) {
     const i = clue_id_to_loc_id(clue_id);
     console.log(`sending check ${i}`);
-    this.client.check(i);
+    try {
+      this.client.check(i);
+    } catch (e) {
+      this.errorCallback(`${e}`);
+    }
   }
 
   getSlotData(): SlotData {

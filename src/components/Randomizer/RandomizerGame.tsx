@@ -35,13 +35,6 @@ class DefaultMap<K, V> extends Map<K, V> {
 
 export function RandomizerGame({client, rewards, visitedLocations}: RandomizerGameProps)
 {
-
-
-
-
-
-    // const solvedCount = Object.keys(solvedClues).filter((id) => solvedClues[id]).length;
-
     const slotdata = client.getSlotData();
     const nCrossLetters = Math.floor(slotdata.cross_letters_per_reward * rewards.nCrossLetterRewards);
     const nRevealedClues = slotdata.n_starting_clues + Math.floor(slotdata.clues_per_reward * rewards.nClueRewards);
