@@ -79,6 +79,7 @@ export class ClientHandler {
       .then((slotData: JSONRecord) => {
         this.slotData = slotData;
         console.log('Connected to the Archipelago server!');
+        callback();
       })
       .catch(console.error);
 

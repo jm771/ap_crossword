@@ -30,7 +30,7 @@ class DefaultMap<K, V> extends Map<K, V> {
 
 type Feedback = 'correct' | 'incorrect' | null;
 
-function AnswerBox({clue,  isSolved, feedback, revealedLetters}:{clue: Clue, isSolved: boolean, feedback: Feedback, revealedLetters: number[]}) 
+function AnswerBox({clue,  isSolved, feedback, revealedLetters, userAnswer}:{clue: Clue, isSolved: boolean, feedback: Feedback, revealedLetters: number[], userAnswer: string}) 
 {
   // const {answers, feedbackClue, feedbackType} = this.state;
   // const {solvedClues} = this.randomizerState;
@@ -44,7 +44,7 @@ function AnswerBox({clue,  isSolved, feedback, revealedLetters}:{clue: Clue, isS
     <Box className="answer-box">
       {clue.answer.split('').map((letter, index) => {
         const isRevealed = revealedLetters.includes(index);
-        const displayLetter = isSolved || isRevealed ? letter : clue.answer[index] || '';
+        const displayLetter = isSolved || isRevealed ? letter : userAnswer[index] || '';
 
         return (
           <Box
@@ -84,11 +84,13 @@ export function RandomizerGame({client, rewards, visitedLocations}: RandomizerGa
   
 
   const handleSubmit = (clue: Clue) => {
-    const userAnswer = (answers[clue_id_to_string(clue)]);
+    const userAnswer = answers[clue_id_to_string(clue)];
     const correctAnswer = clue.answer.toUpperCase();
     const isCorrect = userAnswer === correctAnswer;
 
-    client.solveClue(clue);
+    if (isCorrect) {
+      client.solveClue(clue);
+    }
     setFeedbackClue(clue);
     setFeedbackType(isCorrect ? 'correct' : 'incorrect');
 
@@ -118,8 +120,7 @@ export function RandomizerGame({client, rewards, visitedLocations}: RandomizerGa
 
     const slotdata = client.getSlotData();
     const nCrossLetters = Math.floor(slotdata.cross_letters_per_reward * rewards.nCrossLetterRewards);
-    const nRevealedClues = slotdata.n_starting_clues + (slotdata.clues_per_reward * rewards.nClueRewards);
-
+    const nRevealedClues = slotdata.n_starting_clues + Math.floor(slotdata.clues_per_reward * rewards.nClueRewards);
     const revealedLetterIndicies = new DefaultMap<string, number[]>(() => []);
     slotdata.cross_letters.slice(0, nCrossLetters).forEach(cl => {
       revealedLetterIndicies.getOrCreate(clue_id_to_string(cl.clue_id)).push(cl.index);
@@ -129,6 +130,7 @@ export function RandomizerGame({client, rewards, visitedLocations}: RandomizerGa
         <Box className="clues-container" p={2}>
           {slotdata.clues.map((clue, index) => {
             const clueIdStr = clue_id_to_string(clue);
+            const userAnswer = answers[clueIdStr] ?? '';
             const isSolved = visitedLocations.has(clue_id_to_loc_id(clue));
             const isUncensored = index < nRevealedClues;
             const clasified = '█';
@@ -157,7 +159,7 @@ export function RandomizerGame({client, rewards, visitedLocations}: RandomizerGa
                     {/* {attempts > 0 && ` • ${attempts} wrong attempt${attempts > 1 ? 's' : ''}`} */}
                   </Typography>
 
-                  <AnswerBox clue={clue} isSolved={isSolved} feedback={feedback} revealedLetters={lettersForClue}/>
+                  <AnswerBox clue={clue} isSolved={isSolved} feedback={feedback} revealedLetters={lettersForClue} userAnswer={userAnswer}/>
 
                   {!isSolved && (
                     <Box display="flex" style={{marginTop: '16px', gap: '8px'}}>
