@@ -5,7 +5,7 @@ import {RewardsState, SlotData, ClueId, ClueIdStr, clue_id_to_string, Clue, Cros
 import {Paper, TextField, Button, Typography, Box, Chip} from '@mui/material';
 import {MdCheckCircle, MdCancel, MdSettings} from 'react-icons/md';
 // import './RandomizerGame.css';
-import { ClientHandler } from '../../archipelago_client_handler.js';
+import { ClientHandler } from '../../archipelago_client_handler';
 
 // Remove?
 interface RandomizerGameProps {

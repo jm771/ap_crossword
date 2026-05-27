@@ -1,5 +1,5 @@
 import { Client, ConnectedPacket, JSONRecord } from "archipelago.js";
-import { RewardsState, GameModel, SlotData, ClueId, NotNull, LOCATION_OFFSET, MAX_N_CLUES, clue_id_to_loc_id } from "./shared/types";
+import { RewardsState, SlotData, ClueId, NotNull, LOCATION_OFFSET, MAX_N_CLUES, clue_id_to_loc_id } from "./shared/types";
 
 function unused(thing: any) {}
 
