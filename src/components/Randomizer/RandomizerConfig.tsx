@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,53 +11,32 @@ import {
   Divider,
 } from '@mui/material';
 
-interface RandomizerConfigProps {
+export interface RandomizerConfigProps {
   open: boolean;
   onClose: () => void;
-  onSave: (config: RandomizerConfigState) => void;
-  initialConfig?: RandomizerConfigState;
+  onSave: (config: RandomizerConfig) => void;
+  connectionMessage: string;
 }
 
-export interface RandomizerConfigState {
+export interface RandomizerConfig {
   slotName: string;
   archipelagoUrl: string;
 }
 
-export const DEFAULT_RANDOMIZER_CONFIG: RandomizerConfigState = {
+export const DEFAULT_RANDOMIZER_CONFIG: RandomizerConfig = {
   slotName: 'crossword',
   archipelagoUrl: 'localhost:38281',
 };
 
-export default class RandomizerConfig extends Component<RandomizerConfigProps, RandomizerConfigState> {
-  constructor(props: RandomizerConfigProps) {
-    super(props);
-    this.state = props.initialConfig || DEFAULT_RANDOMIZER_CONFIG;
-  }
+function getInitialConfigState() {
+  return DEFAULT_RANDOMIZER_CONFIG;
+}
 
-  componentDidUpdate(prevProps: RandomizerConfigProps) {
-    if (this.props.initialConfig && prevProps.initialConfig !== this.props.initialConfig) {
-      this.setState(this.props.initialConfig);
-    }
-  }
+export default function RandomizerConfigDialog({open, onClose, onSave, connectionMessage}: RandomizerConfigProps) //extends Component<RandomizerConfigProps, RandomizerConfigState> 
+{
+    const [archipelagoUrl, setArchipelagoUrl] = useState<string>(getInitialConfigState().archipelagoUrl);
+    const [slotName, setSlotName] = useState<string>(getInitialConfigState().slotName);
 
-  handleChange = (field: keyof RandomizerConfigState) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    this.setState({
-      [field]: field === 'slotName' || field === 'archipelagoUrl' ? value : parseFloat(value),
-    } as any);
-  };
-
-  handleSave = () => {
-    this.props.onSave(this.state);
-    this.props.onClose();
-  };
-
-  render() {
-    const {open, onClose} = this.props;
-    const {
-      slotName,
-      archipelagoUrl,
-    } = this.state;
 
     return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -72,7 +51,7 @@ export default class RandomizerConfig extends Component<RandomizerConfigProps, R
               fullWidth
               margin="normal"
               value={slotName}
-              onChange={this.handleChange('slotName')}
+              onChange={(e) => setSlotName(e.target.value)}
               helperText="Your player name in the Archipelago session"
             />
             <TextField
@@ -80,20 +59,19 @@ export default class RandomizerConfig extends Component<RandomizerConfigProps, R
               fullWidth
               margin="normal"
               value={archipelagoUrl}
-              onChange={this.handleChange('archipelagoUrl')}
+              onChange={(e) => setArchipelagoUrl(e.target.value)}
               helperText="Server address (e.g., localhost:38281)"
             />
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} color="secondary">
-            Cancel
+            Close
           </Button>
-          <Button onClick={this.handleSave} color="primary" variant="contained">
-            Save
+          <Button onClick={() => onSave({archipelagoUrl, slotName})} color="primary" variant="contained">
+            Connect
           </Button>
         </DialogActions>
       </Dialog>
     );
-  }
 }

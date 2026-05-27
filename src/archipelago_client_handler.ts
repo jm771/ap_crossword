@@ -73,15 +73,15 @@ export class ClientHandler {
     this.client = client;
   }
 
-  login(archipelagoUrl: string, slotName: string, callback: () => void) {
+  login(archipelagoUrl: string, slotName: string, callback: (a: boolean, b: any) => void) {
        this.client
       .login(archipelagoUrl, slotName, 'Crossword', undefined)
       .then((slotData: JSONRecord) => {
         this.slotData = slotData;
         console.log('Connected to the Archipelago server!');
-        callback();
+        callback(true, null);
       })
-      .catch(console.error);
+      .catch((e) => callback(false, e));
 
   }
 

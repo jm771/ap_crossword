@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { ClientHandler } from "../archipelago_client_handler";
-import RandomizerConfig, { DEFAULT_RANDOMIZER_CONFIG, RandomizerConfigState } from "./Randomizer/RandomizerConfig";
+import RandomizerConfigDialog, { DEFAULT_RANDOMIZER_CONFIG, RandomizerConfig } from "./Randomizer/RandomizerConfig";
 import { ClueId, RewardsState, SlotData } from "../shared/types";
 import React from "react";
 import { RandomizerGame } from "./Randomizer/RandomizerGame";
@@ -11,7 +11,7 @@ import { GameHeader } from "./GameHeader";
   export function RandomizerPage() {
     const [configOpen, setConfigOpen] = useState<boolean>(true);
     // TODO save config into cookies
-    const [config, setConfig] = useState<RandomizerConfigState>(DEFAULT_RANDOMIZER_CONFIG);
+    const [config, setConfig] = useState<RandomizerConfig>(DEFAULT_RANDOMIZER_CONFIG);
     const [client, setClient] = useState<ClientHandler | null>(null);
     const [visitedLocations, setVisitedLocations] = useState<Set<number>>(new Set());
     const [rewardState, setRewardState] = useState<RewardsState>({
@@ -19,6 +19,7 @@ import { GameHeader } from "./GameHeader";
         nClueRewards: 0,
         nCrossLetterRewards: 0
     });
+    const [connectionMessage, setConnectionMessage] = useState<string>("");
 
     useEffect(() => {
         if (config === null) return;
@@ -29,7 +30,14 @@ import { GameHeader } from "./GameHeader";
 
         newClient.login(config.archipelagoUrl,
             config.slotName,
-            () => setClient(newClient));
+            (success, error) => {
+                if (success) {
+                    setClient(newClient);
+                    setConnectionMessage("Connected!");
+                } else {
+                    setConnectionMessage(`${error}`);
+                }
+            });
 
         return () => newClient.disconnect()
     },
@@ -38,11 +46,11 @@ import { GameHeader } from "./GameHeader";
     return (
     <React.StrictMode>
         <div className="randomizer-game">
-        <RandomizerConfig
+        <RandomizerConfigDialog
           open={configOpen}
           onClose={() => setConfigOpen(false)}
           onSave={setConfig}
-          initialConfig={config}
+          connectionMessage={connectionMessage}
         />
          <GameHeader handleOpenConfig={() => setConfigOpen(true) }/>
          {client && ( <RandomizerGame client={client} rewards={rewardState} visitedLocations={visitedLocations}/>)}
