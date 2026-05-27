@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable */
-import React, {Component} from 'react';
-import {GameJson, RandomizerStateJson, RewardsState, RandomizerConfigJson, RandomizerState, ClueData, SlotData, ClueId} from '../../shared/types';
+import React, {Component, useState} from 'react';
+import {GameJson, RandomizerStateJson, RewardsState, RandomizerConfigJson, RandomizerState, ClueData, SlotData, ClueId, ClueIdStr, clue_id_to_string, Clue, clue_to_id_string} from '../../shared/types';
 import {Paper, TextField, Button, Typography, Box, Chip} from '@mui/material';
 import {MdCheckCircle, MdCancel, MdSettings} from 'react-icons/md';
 import './RandomizerGame.css';
@@ -17,93 +17,66 @@ interface RandomizerGameProps {
 }
 
 
-export default class RandomizerGame extends Component<RandomizerGameProps, RandomizerState> {
-  constructor(props: RandomizerGameProps) {
-    super(props);
+// export default class RandomizerGame extends Component<RandomizerGameProps, RandomizerState> {
+//   constructor(props: RandomizerGameProps) {
+//     super(props);
 
-    this.state = {
-      answers: {},
-      feedbackClue: null,
-      feedbackType: null,
-    };
-  }
+//     this.state = {
+//       answers: {},
+//       feedbackClue: null,
+//       feedbackType: null,
+//     };
+//   }
 
-  componentDidUpdate(prevProps: RandomizerGameProps) {
-    const prevConfig = prevProps?.game?.randomizer?.config;
-    const newConfig = this.props?.game?.randomizer?.config;
+//   componentDidUpdate(prevProps: RandomizerGameProps) {
+//     const prevConfig = prevProps?.game?.randomizer?.config;
+//     const newConfig = this.props?.game?.randomizer?.config;
 
-    // Update handler config if it changed
-    if (prevConfig !== newConfig && newConfig && this.handler) {
-      this.handler = new ClientHandler(
-        this.props.gameModel,
-        newConfig.archipelagoUrl,
-        newConfig.slotName,
-        newConfig.nLocations
-      );
-    }
+//     // Update handler config if it changed
+//     if (prevConfig !== newConfig && newConfig && this.handler) {
+//       this.handler = new ClientHandler(
+//         this.props.gameModel,
+//         newConfig.archipelagoUrl,
+//         newConfig.slotName,
+//         newConfig.nLocations
+//       );
+//     }
 
-    const prevLocations = prevProps?.game?.randomizer?.nLocations || 0;
-    const newLocations = this.props?.game?.randomizer?.nLocations || 0;
-    for (let i = prevLocations + 1; i <= newLocations; i++) {
-      this.handler?.solveClueBundle(i);
-    }
-  }
+export function RandomizerGame({client, rewards, solvedClues}: RandomizerGameProps)
+{
+  const [answers, setAnswers] = useState<{ [key: ClueIdStr]: string }>({});
+  const [feedbackClue, setFeedbackClue] = useState<ClueId | null>(null);
+  const [feedbackType, setFeedbackType] = useState<'correct' | 'incorrect' | null>(null);
 
-  // Hash a string to get a consistent seed
-  hashString(str: string): number {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-  }
+  const handleAnswerChange = (clueId: ClueId, value: string) => {
+    setAnswers((last) => { return {
+      ...last,
+      [clue_id_to_string(clueId)]: value.toUpperCase().trim(),
+    }});
+  
 
-  handleAnswerChange = (clueId: string, value: string) => {
-    this.setState((state) => ({
-      answers: {
-        ...state.answers,
-        [clueId]: value.toUpperCase(),
-      },
-    }));
-  };
-
-  handleSubmit = (clue: ClueData) => {
-    const {answers} = this.state;
-    const userAnswer = (answers[clue.id] || '').toUpperCase().trim();
-    const correctAnswer = clue.answer.toUpperCase().trim();
-
-    const {solvedClues} = this.randomizerState;
-    if (solvedClues[clue.id]) {
-      // Already solved, don't process
-      return;
-    }
-
+  const handleSubmit = (clue: Clue) => {
+    const userAnswer = (answers[clue_id_to_string(clue)]);
+    const correctAnswer = clue.answer.toUpperCase();
     const isCorrect = userAnswer === correctAnswer;
 
-    this.props.gameModel.randomizerSubmitAnswer(clue.id, isCorrect);
-    // Show feedback
-    this.setState({
-      feedbackClue: clue.id,
-      feedbackType: isCorrect ? 'correct' : 'incorrect',
-    });
+    client.solveClue(clue);
+    setFeedbackClue(clue);
+    setFeedbackType(isCorrect ? 'correct' : 'incorrect');
+
 
     setTimeout(() => {
-      this.setState({feedbackClue: null, feedbackType: null});
+      setFeedbackClue(null)
+      setFeedbackType(null);
     }, 2000);
   };
 
-  handleForceSolve = (clue: ClueData) => {
-    const {solvedClues} = this.randomizerState;
-    if (solvedClues[clue.id]) {
-      // Already solved, don't process
-      return;
-    }
-
+  const handleForceSolve = (clue: ClueData) => {
     const confirmed = window.confirm(`Are you sure you want to force solve this clue?`);
 
     if (confirmed) {
+
+      client.solveClue(clue);
       this.props.gameModel.randomizerSubmitAnswer(clue.id, true);
       // Show feedback
       this.setState({

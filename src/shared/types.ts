@@ -65,16 +65,3 @@ export interface SlotData {
   clues: Clue[]
   cross_letters: CrossLetter[]
 }
-
-export interface RandomizerState {
-  answers: {[clueId: string]: string}; // User's current answer for each clue (local only)
-  feedbackClue: ClueId | null; // Which clue is showing feedback
-  feedbackType: 'correct' | 'incorrect' | null;
-}
-
-// Remove?
-export type GameModel = {
-  // randomizerSubmitAnswer: (clueId: string, isCorrect: boolean) => {};
-  randomizerGetRewards: (state: RewardsState) => {};
-  // randomizerUpdateConfig: (config: RandomizerConfigJson) => {};
-};
