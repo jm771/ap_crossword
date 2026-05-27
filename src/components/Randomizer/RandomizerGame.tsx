@@ -4,7 +4,7 @@ import React, {Component, useState} from 'react';
 import {RewardsState, SlotData, ClueId, ClueIdStr, clue_id_to_string, Clue, CrossLetter, clue_id_to_loc_id} from '../../shared/types';
 import {Paper, TextField, Button, Typography, Box, Chip} from '@mui/material';
 import {MdCheckCircle, MdCancel, MdSettings} from 'react-icons/md';
-import './RandomizerGame.css';
+// import './RandomizerGame.css';
 import { ClientHandler } from '../../archipelago_client_handler.js';
 
 // Remove?

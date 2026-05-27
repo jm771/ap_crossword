@@ -26,11 +26,6 @@ export interface PuzzleInfo {
     description: string,
 }
 
-export interface GameJson {
-  info: PuzzleInfo
-  randomizer?: RandomizerStateJson;
-}
-
 export type Direction = "Across" | "Down"
 
 export interface ClueId {
