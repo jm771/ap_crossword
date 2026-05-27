@@ -42,11 +42,52 @@ interface RandomizerGameProps {
 //       );
 //     }
 
+type Feedback = 'correct' | 'incorrect' | null;
+
+function AnswerBox({clue,  isSolved, feedback, revealedLetters}:{clue: Clue, isSolved: boolean, feedback: Feedback, revealedLetters: number[]}) 
+{
+  // const {answers, feedbackClue, feedbackType} = this.state;
+  // const {solvedClues} = this.randomizerState;
+  // const isSolved = solvedClues[clue.id];
+  // const revealed = revealedLetters[clue.id] || [];
+  // const showFeedback = feedbackClue === clue.id;
+
+  // const answer = isSolved ? clue.answer : '';
+
+  return (
+    <Box className="answer-box">
+      {clue.answer.split('').map((letter, index) => {
+        const isRevealed = revealedLetters.includes(index);
+        const displayLetter = isSolved || isRevealed ? letter : clue.answer[index] || '';
+
+        return (
+          <Box
+            key={index}
+            className={`letter-box ${isRevealed ? 'revealed' : ''} ${isSolved ? 'solved' : ''}`}
+          >
+            {displayLetter}
+          </Box>
+        );
+      })}
+      {feedback && (
+        <Box className="feedback-icon">
+          {feedback === 'correct' ? (
+            <MdCheckCircle style={{color: 'green', fontSize: 32}} />
+          ) : (
+            <MdCancel style={{color: 'red', fontSize: 32}} />
+          )}
+        </Box>
+      )}
+    </Box>
+  );
+}
+
+
 export function RandomizerGame({client, rewards, solvedClues}: RandomizerGameProps)
 {
   const [answers, setAnswers] = useState<{ [key: ClueIdStr]: string }>({});
   const [feedbackClue, setFeedbackClue] = useState<ClueId | null>(null);
-  const [feedbackType, setFeedbackType] = useState<'correct' | 'incorrect' | null>(null);
+  const [feedbackType, setFeedbackType] = useState<Feedback>(null);
 
   const handleAnswerChange = (clueId: ClueId, value: string) => {
     setAnswers((last) => { return {
@@ -75,57 +116,18 @@ export function RandomizerGame({client, rewards, solvedClues}: RandomizerGamePro
     const confirmed = window.confirm(`Are you sure you want to force solve this clue?`);
 
     if (confirmed) {
-
       client.solveClue(clue);
-      this.props.gameModel.randomizerSubmitAnswer(clue.id, true);
-      // Show feedback
-      this.setState({
-        feedbackClue: clue.id,
-        feedbackType: 'correct',
-      });
+      setFeedbackClue(clue);
+      setFeedbackType('correct');
 
       setTimeout(() => {
-        this.setState({feedbackClue: null, feedbackType: null});
+        setFeedbackClue(null)
+        setFeedbackType(null);
       }, 2000);
     }
   };
 
-  renderAnswerBox(clue: ClueData, revealedLetters: {[clueId: string]: number[]}) {
-    const {answers, feedbackClue, feedbackType} = this.state;
-    const {solvedClues} = this.randomizerState;
-    const isSolved = solvedClues[clue.id];
-    const revealed = revealedLetters[clue.id] || [];
-    const showFeedback = feedbackClue === clue.id;
 
-    const answer = isSolved ? clue.answer : answers[clue.id] || '';
-
-    return (
-      <Box className="answer-box">
-        {clue.answer.split('').map((letter, index) => {
-          const isRevealed = revealed.includes(index);
-          const displayLetter = isSolved || isRevealed ? letter : answer[index] || '';
-
-          return (
-            <Box
-              key={index}
-              className={`letter-box ${isRevealed ? 'revealed' : ''} ${isSolved ? 'solved' : ''}`}
-            >
-              {displayLetter}
-            </Box>
-          );
-        })}
-        {showFeedback && (
-          <Box className="feedback-icon">
-            {feedbackType === 'correct' ? (
-              <MdCheckCircle style={{color: 'green', fontSize: 32}} />
-            ) : (
-              <MdCancel style={{color: 'red', fontSize: 32}} />
-            )}
-          </Box>
-        )}
-      </Box>
-    );
-  }
 
   render() {
     const config = this.getConfig();
