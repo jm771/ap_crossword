@@ -46,6 +46,10 @@ export function clue_id_to_loc_id(clueId: ClueId): number {
   return clueId.number + (clueId.direction == 'Down' ? LOCATION_OFFSET : 0);
 }
 
+export function clue_id_to_desc(clueId: ClueId): string {
+  return `${clueId.number} ${clueId.direction}`
+}
+
 // export function loc_id_to_clue_id(locId: number): ClueId  {
 //   return clueId.number + clueId.direction == 'down' ? LOCATION_OFFSET : 0;
 // }

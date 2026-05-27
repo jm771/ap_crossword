@@ -35,8 +35,6 @@ import { GameHeader } from "./GameHeader";
     },
     [config])
 
-    console.log(visitedLocations);
-
     return (
     <React.StrictMode>
         <div className="randomizer-game">
