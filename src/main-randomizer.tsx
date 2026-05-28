@@ -4,7 +4,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./components/Randomizer/RandomizerGame.css";
+import "./components/RandomizerGame.css";
 import { RandomizerPage } from "./components/RandomizerPage";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

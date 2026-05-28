@@ -1,10 +1,10 @@
 
 import { useEffect, useState } from "react";
 import { ClientHandler } from "../archipelago_client_handler";
-import RandomizerConfigDialog, { DEFAULT_RANDOMIZER_CONFIG, getInitialConfigState, RandomizerConfig } from "./Randomizer/RandomizerConfig";
+import RandomizerConfigDialog, { DEFAULT_RANDOMIZER_CONFIG, getInitialConfigState, RandomizerConfig } from "./RandomizerConfig";
 import { ClueId, RewardsState, SlotData } from "../shared/types";
 import React from "react";
-import { RandomizerGame } from "./Randomizer/RandomizerGame";
+import { RandomizerGame } from "./RandomizerGame";
 import { GameHeader } from "./GameHeader";
 
 export function RandomizerPage() {
