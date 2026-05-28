@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/randomizer-game/',
+  base: '/ap_crossword/',
   server: {
     port: 3020,
   },
