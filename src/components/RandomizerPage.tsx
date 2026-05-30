@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
 import { ClientHandler } from "../archipelago_client_handler";
-import RandomizerConfigDialog, { DEFAULT_RANDOMIZER_CONFIG, getInitialConfigState, RandomizerConfig } from "./RandomizerConfig";
-import { ClueId, RewardsState, SlotData } from "../shared/types";
+import RandomizerConfigDialog, { getInitialConfigState, RandomizerConfig } from "./RandomizerConfig";
+import { RewardsState } from "../shared/types";
 import React from "react";
 import { RandomizerGame } from "./RandomizerGame";
 import { GameHeader } from "./GameHeader";
@@ -32,6 +32,7 @@ export function RandomizerPage() {
 
         newClient.login(config.archipelagoUrl,
             config.slotName,
+            config.password,
             () => {
                 setClient(newClient);
                 setConnectionMessage("Connected!");

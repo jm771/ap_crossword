@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import {useState} from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -8,9 +8,7 @@ import {
   TextField,
   Typography,
   Box,
-  Divider,
 } from '@mui/material';
-import { MdLabel } from 'react-icons/md';
 
 export interface RandomizerConfigProps {
   open: boolean;
@@ -22,12 +20,14 @@ export interface RandomizerConfigProps {
 export interface RandomizerConfig {
   slotName: string;
   archipelagoUrl: string;
+  password: string;
   configSet: boolean;
 }
 
 const DEFAULT_RANDOMIZER_CONFIG: RandomizerConfig = {
   slotName: 'crossword',
   archipelagoUrl: 'localhost:38281',
+  password: '',
   configSet: false
 };
 
@@ -51,6 +51,7 @@ function setCookie(name: string, value: string) {
 
 const SLOT_COOKIE_NAME = 'crosswordSlotName';
 const URL_COOKIE_NAME = 'crosswordArchipelagoUrl';
+const PASSWORD_COOKIE_NAME = 'crosswordArchipelagoPassword';
 const IS_SET_COOKIE_NAME = 'crosswordConfigSet';
 
 export function getInitialConfigState() : RandomizerConfig {
@@ -58,6 +59,7 @@ export function getInitialConfigState() : RandomizerConfig {
   return {
     slotName: getCookie(SLOT_COOKIE_NAME, DEFAULT_RANDOMIZER_CONFIG.slotName),
     archipelagoUrl: getCookie(URL_COOKIE_NAME, DEFAULT_RANDOMIZER_CONFIG.archipelagoUrl),
+    password: getCookie(PASSWORD_COOKIE_NAME, DEFAULT_RANDOMIZER_CONFIG.password),
     configSet: getCookie(IS_SET_COOKIE_NAME, '') != '',
   }
 }
@@ -66,12 +68,14 @@ export default function RandomizerConfigDialog({open, onClose, onSave, connectio
 {
     const [archipelagoUrl, setArchipelagoUrl] = useState<string>(getInitialConfigState().archipelagoUrl);
     const [slotName, setSlotName] = useState<string>(getInitialConfigState().slotName);
+    const [password, setPassword] = useState<string>(getInitialConfigState().password);
 
     const onConnectClick = () => {
       setCookie(URL_COOKIE_NAME, archipelagoUrl);
       setCookie(SLOT_COOKIE_NAME, slotName);
+      setCookie(PASSWORD_COOKIE_NAME, password)
       setCookie(IS_SET_COOKIE_NAME, 'true');
-      onSave({archipelagoUrl, slotName, configSet: true})
+      onSave({archipelagoUrl, slotName, password, configSet: true})
     } 
 
 
@@ -84,14 +88,6 @@ export default function RandomizerConfigDialog({open, onClose, onSave, connectio
               Archipelago Connection
             </Typography>
             <TextField
-              label="Slot Name"
-              fullWidth
-              margin="normal"
-              value={slotName}
-              onChange={(e) => setSlotName(e.target.value)}
-              helperText="Your player name in the Archipelago session"
-            />
-            <TextField
               label="Archipelago URL"
               fullWidth
               margin="normal"
@@ -100,6 +96,23 @@ export default function RandomizerConfigDialog({open, onClose, onSave, connectio
               helperText="Server address (e.g., localhost:38281)"
             />
           </Box>
+                      <TextField
+              label="Slot Name"
+              fullWidth
+              margin="normal"
+              value={slotName}
+              onChange={(e) => setSlotName(e.target.value)}
+              helperText="Your player name in the Archipelago session"
+            />
+            <TextField
+              label="Archipelago Server Password"
+              fullWidth
+              margin="normal"
+              value={password}
+              type="password"
+              onChange={(e) => setPassword(e.target.value)}
+              helperText="Server password or blank"
+            />
           <Typography variant="body1">{connectionMessage}</Typography >
         </DialogContent>
         <DialogActions>

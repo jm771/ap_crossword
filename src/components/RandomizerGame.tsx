@@ -1,10 +1,5 @@
-/* eslint-disable max-classes-per-file */
-/* eslint-disable */
-import React, {Component, useState} from 'react';
-import {RewardsState, SlotData, ClueId, ClueIdStr, clue_id_to_string, Clue, CrossLetter, clue_id_to_loc_id, clue_id_to_desc} from '../shared/types';
-import {Paper, TextField, Button, Typography, Box, Chip} from '@mui/material';
-import {MdCheckCircle, MdCancel, MdSettings} from 'react-icons/md';
-// import './RandomizerGame.css';
+import {RewardsState, clue_id_to_string, clue_id_to_loc_id} from '../shared/types';
+import {Box} from '@mui/material';
 import { ClientHandler } from '../archipelago_client_handler';
 import { ClueCard } from './ClueCard';
 

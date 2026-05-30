@@ -1,7 +1,7 @@
-import { Client, ConnectedPacket, JSONRecord } from "archipelago.js";
+import { Client, JSONRecord } from "archipelago.js";
 import { RewardsState, SlotData, ClueId, NotNull, LOCATION_OFFSET, MAX_N_CLUES, clue_id_to_loc_id } from "./shared/types";
 
-function unused(thing: any) {}
+function unused(_thing: any) {}
 
 function UpdateRewards(state: RewardsState, items: any[], index: number): RewardsState {
   if (!items || !items.length) {
@@ -37,15 +37,13 @@ function UpdateRewards(state: RewardsState, items: any[], index: number): Reward
 type setState<T> = (f: T | ((arg0: T) => T)) => void;
 
 
-function cludeIdFromLocId(id: number): ClueId {
+export function clueIdFromLocId(id: number): ClueId {
     const IS_DOWN_SPLIT = 10 * 1000;
   return {
       direction: id >= IS_DOWN_SPLIT ? "Down" : "Across",
       number: id % IS_DOWN_SPLIT
   }
 }
-
-
 
 export class ClientHandler {
   private client: Client;
@@ -77,11 +75,11 @@ export class ClientHandler {
     this.client = client;
   }
 
-  login(archipelagoUrl: string, slotName: string, callback: () => void) {
+  login(archipelagoUrl: string, slotName: string, password: string, callback: () => void) {
        this.client
-      .login(archipelagoUrl, slotName, 'Crossword', undefined)
+      .login(archipelagoUrl, slotName, 'Crossword', {password} )
       .then((slotData: JSONRecord) => {
-        this.slotData = slotData;
+        this.slotData = slotData as unknown as SlotData;
         console.log('Connected to the Archipelago server!');
         callback();
       })

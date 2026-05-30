@@ -1,5 +1,4 @@
 import { Box, Button, Chip, Typography } from "@mui/material";
-import React from "react";
 import { MdSettings } from "react-icons/md";
 
 export function GameHeader({handleOpenConfig, solvedCount, totalClues}: {handleOpenConfig: () => void, solvedCount: number, totalClues: number}) {

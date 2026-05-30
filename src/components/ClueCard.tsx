@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Clue, clue_id_to_desc, clue_id_to_string } from "../shared/types";
+import { Clue, clue_id_to_desc } from "../shared/types";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { MdCancel, MdCheckCircle } from "react-icons/md";
 import { ClientHandler } from "../archipelago_client_handler";
@@ -39,7 +39,6 @@ function AnswerBox({clue,  isSolved, feedback, revealedLetters, userAnswer}:{clu
 export function ClueCard({client, clue,  isSolved, isUncensored, revealedLetters}:
     {client: ClientHandler, clue: Clue, isSolved: boolean, isUncensored: boolean, revealedLetters: number[]})
 {
-    const clueIdStr = clue_id_to_string(clue);
     const [userAnswer, setUserAnswer] = useState<string>('');
     const [feedbackType, setFeedbackType] = useState<Feedback>(null);
     const clasified = '█';
