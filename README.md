@@ -1,4 +1,4 @@
-<img width="933" height="880" alt="image" src="https://github.com/user-attachments/assets/3e45e64e-dc2c-4fc2-842e-a6b3dbb7bcdd" />
+<img width="600" height="397" alt="image" src="https://github.com/user-attachments/assets/f25a74a9-d891-492f-ab96-a0aacbadf820" />
 
 
 # An integration for crosswords in Archipelago
