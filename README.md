@@ -1,3 +1,6 @@
+<img width="933" height="880" alt="image" src="https://github.com/user-attachments/assets/3e45e64e-dc2c-4fc2-842e-a6b3dbb7bcdd" />
+
+
 # An integration for crosswords in Archipelago
 
 In a regular crossword - by solving an across clue, you "unlock" the knowledge of some cross letters in down clues
