@@ -4,7 +4,7 @@ import { MdSettings } from "react-icons/md";
 export function GameHeader({handleOpenConfig, solvedCount, totalClues}: {handleOpenConfig: () => void, solvedCount: number, totalClues: number}) {
     return (        <Box className="randomizer-header" p={2}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h4">Crossword Randomizer</Typography>
+            <Typography variant="h4">Archipelago Crossword Randomizer</Typography>
             <Box display="flex" style={{gap: '8px'}}>
               <Button
                 variant="outlined"
@@ -22,7 +22,7 @@ export function GameHeader({handleOpenConfig, solvedCount, totalClues}: {handleO
             {/* <Chip label={`Wrong Attempts: ${totalWrongAttempts}`} color="secondary" /> */}
           </Box>
           <Typography variant="body2" color="textSecondary" style={{marginTop: '8px'}}>
-            Solve clues to earn letter reveals in other clues. Clues are in random order.
+            Solving clues are locations. Reward items are cross letters and uncensoring later clues.
           </Typography>
         </Box>)
 }
