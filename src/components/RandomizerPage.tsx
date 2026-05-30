@@ -41,6 +41,8 @@ export function RandomizerPage() {
     },
     [config])
 
+    const totalClues = client?.getSlotData().clues.length ?? 0;
+
     return (
     <React.StrictMode>
         <div className="randomizer-game">
@@ -50,7 +52,7 @@ export function RandomizerPage() {
             onSave={setConfig}
             connectionMessage={connectionMessage}
         />
-            <GameHeader handleOpenConfig={() => setConfigOpen(true) }/>
+            <GameHeader totalClues={totalClues} solvedCount={visitedLocations.size} handleOpenConfig={() => setConfigOpen(true) }/>
             {client && ( <RandomizerGame client={client} rewards={rewardState} visitedLocations={visitedLocations}/>)}
             </div>
         </React.StrictMode>

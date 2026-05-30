@@ -23,10 +23,9 @@ The game is very new. I currently have some time to put into this - and am very 
 
 ### Work in progress
 - Add password to the archipelago login option
-- New randomization option for all cross letters vs just cross letters in the puzzle
 - Text client on the web interface
 - Better visibility of what you're unlocking for people (in chat or banner)
-- Connect up the "solved puzzle" count and connect or remove "Wrong Attempts"
+- Track number of wrong guesses
 - Rerender less of the UI on updates
 
 ### Maybe in the future?
