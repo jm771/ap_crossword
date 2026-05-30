@@ -16,7 +16,7 @@ Use the website here: https://jm771.github.io/ap_crossword/ and connect to your 
 
 ### FAQ
 "while parsing a quoted scalar did not find expected hexdecimal number"
-In yaml strings in double quotes `"`' treat backslashes `\` as escape sequences. Unfortunately windows "copy as path" triggers this - change your double quotes to single quotes `'`
+In yaml strings in double quotes `"` treat backslashes `\` as escape sequences. Unfortunately windows "copy as path" triggers this - change your double quotes to single quotes `'`
 
 ### Feedback
 The game is very new. I currently have some time to put into this - and am very open to any feedback that'd help make this easier to use or more fun for people to play. I'd prioritise that over my own ideas.
