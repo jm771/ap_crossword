@@ -1,7 +1,6 @@
-<img width="600" height="397" alt="image" src="https://github.com/user-attachments/assets/f25a74a9-d891-492f-ab96-a0aacbadf820" />
-
-
 # An integration for crosswords in Archipelago
+
+<img width="600" height="397" alt="image" src="https://github.com/user-attachments/assets/f25a74a9-d891-492f-ab96-a0aacbadf820" />
 
 In a regular crossword - by solving an across clue, you "unlock" the knowledge of some cross letters in down clues
 In this crossword randomizer the locations are solving clues, and the items are cross letters.
