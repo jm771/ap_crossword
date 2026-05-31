@@ -28,6 +28,7 @@ The game is very new. I currently have some time to put into this - and am very 
 ### Work in progress
 - Fix display of non-ascii characters
 - Text client on the web interface
+- Display puzzle info (setter, copyright, any gimick info)
 - Better visibility of what you're unlocking for people (in chat or banner)
 - Track number of wrong guesses
 - Rerender less of the UI on updates
