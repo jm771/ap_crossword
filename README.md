@@ -37,6 +37,7 @@ The game is very new. I currently have some time to put into this - and am very 
   - Would be nice to enter in box directly
 
 ### Maybe in the future?
+- Show grid in crossword form on game completion
 - Deathlink
 
 ### Alternatives
