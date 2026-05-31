@@ -11,6 +11,7 @@ Archipelago is more fun when you can't beat the game without rewards from the mu
 ### Your own puzzle
 Part of the fun of crosswords is having a high quality crossword with great clues of a style you enjoy (American style/Cryptic/Easy/ Hard) so the randomizer outsources the job of finding a good crossword to you.
 As part of world generation you need to provide a `.puz` file containing the crossword you wish to randomize. Several crossword outlets provide `.puz` files as part of a subscription. Or you can use this excellent tool to download `.puz` files from many popular outlets: https://github.com/thisisparker/xword-dl
+Archipelago community member Buck has made some free puzzles you can download here: https://buckscrosswords.xyz/archive.html
 
 ## Setup
 Download the latest apworld file from: https://github.com/jm771/apworld_crossword/releases/ and install it into archipelago.
@@ -25,11 +26,15 @@ yaml treats `\` as escape sequences in strings that use double quotes `"`. Unfor
 The game is very new. I currently have some time to put into this - and am very open to any feedback that'd help make this easier to use or more fun for people to play. I'd prioritise that over my own ideas. Feel free to contact me through github issues or on the archipelago discord under name rabidherring.
 
 ### Work in progress
-- Add password to the archipelago login option
+- Fix display of non-ascii characters
 - Text client on the web interface
 - Better visibility of what you're unlocking for people (in chat or banner)
 - Track number of wrong guesses
 - Rerender less of the UI on updates
+- Better clue entry
+  - Currntly can have a typo overlap with an unlocked cross letter and it's hard to see
+  - Editing part way through clue causes cursor to jump
+  - Would be nice to enter in box directly
 
 ### Maybe in the future?
 - Deathlink
