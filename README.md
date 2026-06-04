@@ -19,11 +19,11 @@ Update the sample yaml file with a pointer to your `.puz` file and generate and 
 Use the website here: https://jm771.github.io/ap_crossword/ and connect to your archipelago server.
 
 ## FAQ
-### Having to upload multiple files makes things harder for the person running the multiworld
+#### Having to upload multiple files makes things harder for the person running the multiworld
 You can now bundle your puz file into your yaml. Upload your baseline yaml and your puz file and download the result:
 https://jm771.github.io/ap_crossword_yaml_puz/
 
-### "while parsing a quoted scalar did not find expected hexdecimal number"
+#### "while parsing a quoted scalar did not find expected hexdecimal number"
 yaml treats `\` as escape sequences in strings that use double quotes `"`. Unfortunately windows "copy as path" triggers this. Change your double quotes to single quotes `'`
 
 ## Feedback
@@ -45,5 +45,5 @@ The game is very new. I currently have some time to put into this - and am very 
 - Show grid in crossword form on game completion
 - Deathlink
 
-### Alternatives
+## Alternatives
 densebamboo has also made an archipelago crossword randomizer with very different design choices (the words are actually crossed, the website provides the clues rather than the user providing a `.puz` file). It doesn't appear to be under active development at the moment, but was more mature than this is when it was stopped. You might also enjoy checking it out: https://densebamboo.github.io/CrosswordAP/ 
