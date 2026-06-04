@@ -18,15 +18,15 @@ Download the latest apworld file from: https://github.com/jm771/apworld_crosswor
 Update the sample yaml file with a pointer to your `.puz` file and generate and host a world.
 Use the website here: https://jm771.github.io/ap_crossword/ and connect to your archipelago server.
 
-### FAQ
-#### Having to upload multiple files makes things harder for the person running the multiworld
+## FAQ
+### Having to upload multiple files makes things harder for the person running the multiworld
 You can now bundle your puz file into your yaml. Upload your baseline yaml and your puz file and download the result:
 https://jm771.github.io/ap_crossword_yaml_puz/
 
-#### "while parsing a quoted scalar did not find expected hexdecimal number"
+### "while parsing a quoted scalar did not find expected hexdecimal number"
 yaml treats `\` as escape sequences in strings that use double quotes `"`. Unfortunately windows "copy as path" triggers this. Change your double quotes to single quotes `'`
 
-### Feedback
+## Feedback
 The game is very new. I currently have some time to put into this - and am very open to any feedback that'd help make this easier to use or more fun for people to play. I'd prioritise that over my own ideas. Feel free to contact me through github issues or on the archipelago discord under name rabidherring.
 
 ### Work in progress
