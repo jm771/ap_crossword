@@ -79,8 +79,10 @@ function AnswerBox({
   if (isSolved) {
     return (
       <Box className="answer-box">
-        {clue.answer.split("").map((letter) => (
-          <Box className="letter-box solved">{letter}</Box>
+        {clue.answer.split("").map((letter, index) => (
+          <Box key={index} className="letter-box solved">
+            {letter}
+          </Box>
         ))}
       </Box>
     );
@@ -91,17 +93,20 @@ function AnswerBox({
       {userAnswers.map((letter, index) => {
         if (revealedLetters.includes(index))
           return (
-            <Box className="letter-box revealed">{clue.answer[index]}</Box>
+            <Box key={index} className="letter-box revealed">
+              {clue.answer[index]}
+            </Box>
           );
         else {
           return (
-            <Box className={`letter-box`}>
+            <Box key={index} className={`letter-box`}>
               <input
                 ref={(el) => (inputRefs.current[index] = el)}
                 type="text"
                 maxLength={1}
                 value={letter}
                 onKeyDown={(e) => handleKeyDown(index, e)}
+                onChange={(e) => {}} // Handled by on key down
                 onClick={() => setFocus(index)}
                 style={{
                   width: "100%",
@@ -138,7 +143,8 @@ export function ClueCard({
   revealedLetters: number[];
 }) {
   const [userAnswers, setUserAnswers] = useState<string[]>(
-    new Array(clue.answer.length),
+    // When I get internet there must be a better way
+    clue.answer.split("").map((_) => ""),
   );
   const [feedbackType, setFeedbackType] = useState<Feedback>(null);
   const clasified = "█";
