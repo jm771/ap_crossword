@@ -6,49 +6,6 @@ import { ClientHandler } from "../archipelago_client_handler";
 
 export type Feedback = "correct" | "incorrect" | null;
 
-// export type LetterRevealSubscription = {
-//   subscribe_to_letter_reveal: (clueId: ClueId, index: number, callback: ) => void
-// }
-
-function SolvedCell({ letter }: { letter: string }) {
-  return <Box className="letter-box solved">letter</Box>;
-}
-
-function RevealedCell({ letter }: { letter: string }) {
-  return <Box className="letter-box revealed" />;
-}
-
-function InputCell({
-  maybeRevealedLetter,
-}: {
-  maybeRevealedLetter: string | null;
-}) {
-  return (
-    <Box className={`letter-box`}>
-      <input
-        ref={(el) => (inputRefs.current[index] = el)}
-        type="text"
-        maxLength={1}
-        value={displayLetter}
-        onKeyDown={(e) => handleKeyDown(index, e)}
-        onClick={() => setFocus(index)}
-        style={{
-          width: "100%",
-          height: "100%",
-          border: "none",
-          background: "transparent",
-          textAlign: "center",
-          fontSize: "inherit",
-          fontFamily: "inherit",
-          outline: "none",
-          cursor: "text",
-          textTransform: "uppercase",
-        }}
-      />
-    </Box>
-  );
-}
-
 function AnswerBox({
   clue,
   isSolved,
@@ -58,24 +15,11 @@ function AnswerBox({
   clue: Clue;
   isSolved: boolean;
   revealedLetters: number[];
+  userAnswers: string[];
+  setUserAnswer: (index: number, value: string) => void;
 }) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const focusedIndex = useRef<number>(0);
-  const [userAnswers, setUserAnswers] = useState<string[]>(
-    new Array(clue.answer.length),
-  );
-
-  function getFullAnswer(): string {
-    return userAnswers
-      .map((letter, index) =>
-        revealedLetters.includes(index) ? clue.answer[index] : letter,
-      )
-      .join("");
-  }
-
-  function setUserAnswer(index: number, value: string) {
-    setUserAnswers((old) => old.map((v, i) => (i == index ? value : v)));
-  }
 
   function setFocus(index: number) {
     focusedIndex.current = index;
@@ -134,20 +78,45 @@ function AnswerBox({
   if (isSolved) {
     return (
       <Box className="answer-box">
-        {clue.answer.split("").map((letter) => {
-          return <SolvedCell letter={letter} />;
-        })}
+        {clue.answer.split("").map((letter) => (
+          <Box className="letter-box solved">{letter}</Box>
+        ))}
       </Box>
     );
   }
 
   return (
     <Box className="answer-box">
-      {clue.answer.split("").map((letter, index) => {
+      {userAnswers.map((letter, index) => {
         if (revealedLetters.includes(index))
-          return <RevealedCell letter={letter} />;
+          return (
+            <Box className="letter-box revealed">{clue.answer[index]}</Box>
+          );
         else {
-          return <InputCell />;
+          return (
+            <Box className={`letter-box`}>
+              <input
+                ref={(el) => (inputRefs.current[index] = el)}
+                type="text"
+                maxLength={1}
+                value={letter}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onClick={() => setFocus(index)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                  background: "transparent",
+                  textAlign: "center",
+                  fontSize: "inherit",
+                  fontFamily: "inherit",
+                  outline: "none",
+                  cursor: "text",
+                  textTransform: "uppercase",
+                }}
+              />
+            </Box>
+          );
         }
       })}
     </Box>
@@ -167,7 +136,9 @@ export function ClueCard({
   isUncensored: boolean;
   revealedLetters: number[];
 }) {
-  const userAnswerRef = useRef<string>("");
+  const [userAnswers, setUserAnswers] = useState<string[]>(
+    new Array(clue.answer.length),
+  );
   const [feedbackType, setFeedbackType] = useState<Feedback>(null);
   const clasified = "█";
   const halfLength = clue.clue.length >> 1;
@@ -176,13 +147,20 @@ export function ClueCard({
     : clue.clue.substring(0, halfLength) +
       clasified.repeat((clue.clue.length - halfLength) >> 1);
 
-  function onAnswerChange(answer: string) {
-    userAnswerRef.current = answer;
+  function getFullUserAnswer(): string {
+    return userAnswers
+      .map((letter, index) =>
+        revealedLetters.includes(index) ? clue.answer[index] : letter,
+      )
+      .join("");
+  }
+
+  function setUserAnswer(index: number, value: string) {
+    setUserAnswers((old) => old.map((v, i) => (i == index ? value : v)));
   }
 
   const handleSubmit = (clue: Clue) => {
-    const correctAnswer = clue.answer.toUpperCase();
-    const isCorrect = userAnswerRef.current === correctAnswer;
+    const isCorrect = getFullUserAnswer() === clue.answer.toUpperCase();
 
     if (isCorrect) {
       client.solveClue(clue);
@@ -223,9 +201,9 @@ export function ClueCard({
         <AnswerBox
           clue={clue}
           isSolved={isSolved}
-          feedback={feedbackType}
           revealedLetters={revealedLetters}
-          onAnswerChange={onAnswerChange}
+          userAnswers={userAnswers}
+          setUserAnswer={setUserAnswer}
         />
         {feedbackType && (
           <Box className="feedback-icon">
