@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { Clue, clue_id_to_desc, ClueId } from "../shared/types";
+import { useState, useRef } from "react";
+import { Clue, clue_id_to_desc } from "../shared/types";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { MdCancel, MdCheckCircle } from "react-icons/md";
 import { ClientHandler } from "../archipelago_client_handler";
@@ -10,6 +10,7 @@ function AnswerBox({
   clue,
   isSolved,
   revealedLetters,
+  userAnswers,
   setUserAnswer,
 }: {
   clue: Clue;
@@ -221,7 +222,7 @@ export function ClueCard({
               variant="contained"
               color="primary"
               onClick={() => handleSubmit(clue)}
-              disabled={isSolved || !userAnswer.trim()}
+              disabled={getFullUserAnswer().length !== clue.answer.length}
             >
               Submit
             </Button>
