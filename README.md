@@ -22,10 +22,17 @@ Use the website here: https://jm771.github.io/ap_crossword/ and connect to your 
 
 ## FAQ
 
+<<<<<<< HEAD
+
 #### Having to upload multiple files makes things harder for the person running the multiworld
 
-You can now bundle your puz file into your yaml. Upload your baseline yaml and your puz file and download the result:
-https://jm771.github.io/ap_crossword_yaml_puz/
+=======
+
+#### Having to upload multiple files makes things harder for the person running the multiworld
+
+> > > > > > > 50a4cf46ca954864a1fe73bbf009e525f7713a3f
+> > > > > > > You can now bundle your puz file into your yaml. Upload your baseline yaml and your puz file and download the result:
+> > > > > > > https://jm771.github.io/ap_crossword_yaml_puz/
 
 #### "while parsing a quoted scalar did not find expected hexdecimal number"
 
