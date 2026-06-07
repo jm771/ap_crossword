@@ -32,25 +32,35 @@ function AnswerBox({
   }
 
   function moveFocusLeft(index: number): number {
-    while (index >= 0) {
-      index--;
-      if (!revealedLetters.includes(index)) {
+    let newIndex = index;
+    while (newIndex >= 0) {
+      newIndex--;
+      if (!revealedLetters.includes(newIndex)) {
         break;
       }
     }
-    setFocus(index);
-    return index;
+    if (newIndex >= 0) {
+      setFocus(newIndex);
+      return newIndex;
+    } else {
+      return index;
+    }
   }
 
   function moveFocusRight(index: number): number {
-    while (index < clue.answer.length) {
-      index++;
-      if (!revealedLetters.includes(index)) {
+    let newIndex = index;
+    while (newIndex < clue.answer.length) {
+      newIndex++;
+      if (!revealedLetters.includes(newIndex)) {
         break;
       }
     }
-    setFocus(index);
-    return index;
+    if (newIndex < clue.answer.length) {
+      setFocus(newIndex);
+      return newIndex;
+    } else {
+      return index;
+    }
   }
 
   const handleKeyDown = (
