@@ -1,6 +1,6 @@
 # An integration for crosswords in Archipelago
 
-<img width="600" height="397" alt="image" src="https://github.com/user-attachments/assets/f25a74a9-d891-492f-ab96-a0aacbadf820" />
+<img width="600" height="406" alt="image" src="https://github.com/user-attachments/assets/f1a82fa9-bc4c-41f1-8484-4826003b30d8" />
 
 In a regular crossword - by solving an across clue, you "unlock" the knowledge of some cross letters in down clues
 In this crossword randomizer the locations are solving clues, and the items are cross letters.
@@ -12,6 +12,7 @@ Archipelago is more fun when you can't beat the game without rewards from the mu
 
 Part of the fun of crosswords is having a high quality crossword with great clues of a style you enjoy (American style/Cryptic/Easy/ Hard) so the randomizer outsources the job of finding a good crossword to you.
 As part of world generation you need to provide a `.puz` file containing the crossword you wish to randomize. Several crossword outlets provide `.puz` files as part of a subscription. Or you can use this excellent tool to download `.puz` files from many popular outlets: https://github.com/thisisparker/xword-dl
+Archipelago community member Buck has made some free puzzles you can download here: https://buckscrosswords.xyz/archive.html
 
 ## Setup
 
@@ -19,27 +20,40 @@ Download the latest apworld file from: https://github.com/jm771/apworld_crosswor
 Update the sample yaml file with a pointer to your `.puz` file and generate and host a world.
 Use the website here: https://jm771.github.io/ap_crossword/ and connect to your archipelago server.
 
-### FAQ
+## FAQ
+
+#### Having to upload multiple files makes things harder for the person running the multiworld
+
+You can now bundle your puz file into your yaml. Upload your baseline yaml and your puz file and download the result:
+https://jm771.github.io/ap_crossword_yaml_puz/
 
 #### "while parsing a quoted scalar did not find expected hexdecimal number"
 
 yaml treats `\` as escape sequences in strings that use double quotes `"`. Unfortunately windows "copy as path" triggers this. Change your double quotes to single quotes `'`
 
-### Feedback
+## Feedback
 
 The game is very new. I currently have some time to put into this - and am very open to any feedback that'd help make this easier to use or more fun for people to play. I'd prioritise that over my own ideas. Feel free to contact me through github issues or on the archipelago discord under name rabidherring.
 
 ### Work in progress
 
+- Fix display of non-ascii characters
 - Text client on the web interface
+- Display puzzle info (setter, copyright, any gimick info)
 - Better visibility of what you're unlocking for people (in chat or banner)
 - Track number of wrong guesses
+- Rerender less of the UI on updates
 - Generation options to skew cross letters earlier
+- Better clue entry
+  - Currntly can have a typo overlap with an unlocked cross letter and it's hard to see
+  - Editing part way through clue causes cursor to jump
+  - Would be nice to enter in box directly
 
 ### Maybe in the future?
 
+- Show grid in crossword form on game completion
 - Deathlink
 
-### Alternatives
+## Alternatives
 
 densebamboo has also made an archipelago crossword randomizer with very different design choices (the words are actually crossed, the website provides the clues rather than the user providing a `.puz` file). It doesn't appear to be under active development at the moment, but was more mature than this is when it was stopped. You might also enjoy checking it out: https://densebamboo.github.io/CrosswordAP/
