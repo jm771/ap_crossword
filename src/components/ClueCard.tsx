@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef, ReactElement } from "react";
 import { Clue, clue_id_to_desc } from "../shared/types";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { MdCancel, MdCheckCircle } from "react-icons/md";
@@ -12,12 +12,16 @@ function AnswerBox({
   revealedLetters,
   userAnswers,
   setUserAnswer,
+  children,
+  handleSubmit,
 }: {
   clue: Clue;
   isSolved: boolean;
   revealedLetters: number[];
   userAnswers: string[];
   setUserAnswer: (index: number, value: string) => void;
+  children: ReactElement;
+  handleSubmit: () => void;
 }) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const focusedIndex = useRef<number>(0);
@@ -53,6 +57,11 @@ function AnswerBox({
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) {
+      return;
+    }
+
+    console.log(e);
     if (e.key === "Backspace") {
       e.preventDefault();
 
@@ -72,7 +81,10 @@ function AnswerBox({
       moveFocusLeft(index);
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
-      moveFocusLeft(index);
+      moveFocusRight(index);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -125,6 +137,7 @@ function AnswerBox({
           );
         }
       })}
+      {children}
     </Box>
   );
 }
@@ -166,7 +179,7 @@ export function ClueCard({
     setUserAnswers((old) => old.map((v, i) => (i == index ? value : v)));
   }
 
-  const handleSubmit = (clue: Clue) => {
+  const handleSubmit = () => {
     const isCorrect = getFullUserAnswer() === clue.answer.toUpperCase();
 
     if (isCorrect) {
@@ -179,7 +192,7 @@ export function ClueCard({
     }, 2000);
   };
 
-  const handleForceSolve = (clue: Clue) => {
+  const handleForceSolve = () => {
     const confirmed = window.confirm(
       `Are you sure you want to force solve this clue?`,
     );
@@ -211,23 +224,28 @@ export function ClueCard({
           revealedLetters={revealedLetters}
           userAnswers={userAnswers}
           setUserAnswer={setUserAnswer}
-        />
-        {feedbackType && (
-          <Box className="feedback-icon">
-            {feedbackType === "correct" ? (
-              <MdCheckCircle style={{ color: "green", fontSize: 32 }} />
-            ) : (
-              <MdCancel style={{ color: "red", fontSize: 32 }} />
+          handleSubmit={handleSubmit}
+        >
+          <>
+            {" "}
+            {feedbackType && (
+              <Box className="feedback-icon">
+                {feedbackType === "correct" ? (
+                  <MdCheckCircle style={{ color: "green", fontSize: 32 }} />
+                ) : (
+                  <MdCancel style={{ color: "red", fontSize: 32 }} />
+                )}
+              </Box>
             )}
-          </Box>
-        )}
+          </>
+        </AnswerBox>
 
         {!isSolved && (
           <Box display="flex" style={{ marginTop: "16px", gap: "8px" }}>
             <Button
               variant="contained"
               color="primary"
-              onClick={() => handleSubmit(clue)}
+              onClick={() => handleSubmit()}
               disabled={getFullUserAnswer().length !== clue.answer.length}
             >
               Submit
@@ -236,7 +254,7 @@ export function ClueCard({
               variant="outlined"
               color="secondary"
               size="small"
-              onClick={() => handleForceSolve(clue)}
+              onClick={() => handleForceSolve()}
               disabled={isSolved}
             >
               Force
