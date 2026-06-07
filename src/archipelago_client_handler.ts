@@ -139,11 +139,9 @@ export class ClientHandler {
 
   receiveditemsListener = (items: Item[], index: number) => {
     console.log("ReceivedItems packet: ", items, index);
-    console.log(items);
 
     this.setRewardState((rewardState: RewardsState) => {
       const newState = UpdateRewards(rewardState, items, index);
-      console.log(rewardState);
 
       if (newState.sequenceNo > rewardState.sequenceNo) {
         console.log(`New State ${JSON.stringify(newState)}`);

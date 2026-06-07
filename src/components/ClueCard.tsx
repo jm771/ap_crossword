@@ -71,7 +71,6 @@ function AnswerBox({
       return;
     }
 
-    console.log(e);
     if (e.key === "Backspace") {
       e.preventDefault();
 

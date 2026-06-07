@@ -45,6 +45,7 @@ The game is very new. I currently have some time to put into this - and am very 
 - Rerender less of the UI on updates
 - Puzzle info included in visuals
 - Generation options to skew cross letters earlier
+- Configurable level of censorship
 - Better clue entry
   - Currntly can have a typo overlap with an unlocked cross letter and it's hard to see
   - Editing part way through clue causes cursor to jump
