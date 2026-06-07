@@ -43,6 +43,7 @@ The game is very new. I currently have some time to put into this - and am very 
 - Better visibility of what you're unlocking for people (in chat or banner)
 - Track number of wrong guesses
 - Rerender less of the UI on updates
+- Puzzle info included in visuals
 - Generation options to skew cross letters earlier
 - Better clue entry
   - Currntly can have a typo overlap with an unlocked cross letter and it's hard to see

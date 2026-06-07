@@ -110,6 +110,7 @@ function AnswerBox({
     );
   }
 
+  let firstEditable = true;
   return (
     <Box className="answer-box">
       {userAnswers.map((letter, index) => {
@@ -120,9 +121,12 @@ function AnswerBox({
             </Box>
           );
         else {
+          const tabIndex = firstEditable ? 0 : -1;
+          firstEditable = false;
           return (
             <Box key={index} className={`letter-box`}>
               <input
+                tabIndex={tabIndex}
                 ref={(el) => (inputRefs.current[index] = el)}
                 type="text"
                 maxLength={1}
@@ -253,6 +257,7 @@ export function ClueCard({
         {!isSolved && (
           <Box display="flex" style={{ marginTop: "16px", gap: "8px" }}>
             <Button
+              tabIndex={-1}
               variant="contained"
               color="primary"
               onClick={() => handleSubmit()}
@@ -261,6 +266,7 @@ export function ClueCard({
               Submit
             </Button>
             <Button
+              tabIndex={-1}
               variant="outlined"
               color="secondary"
               size="small"
