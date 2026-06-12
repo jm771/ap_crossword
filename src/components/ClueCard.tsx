@@ -131,7 +131,7 @@ function AnswerBox({
                 maxLength={1}
                 value={letter}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                onChange={() => {}} // Handled by on key down
+                onChange={(e) => {}} // Handled by on key down
                 onClick={() => setFocus(index)}
                 style={{
                   width: "100%",
