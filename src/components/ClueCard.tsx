@@ -6,6 +6,25 @@ import { ClientHandler } from "../archipelago_client_handler";
 
 export type Feedback = "correct" | "incorrect" | null;
 
+function getCircularReplacer() {
+  const ancestors = [];
+  return function (key, value) {
+    if (typeof value !== "object" || value === null) {
+      return value;
+    }
+    // `this` is the object that value is contained in,
+    // i.e., its direct parent.
+    while (ancestors.length > 0 && ancestors.at(-1) !== this) {
+      ancestors.pop();
+    }
+    if (ancestors.includes(value)) {
+      return "[Circular]";
+    }
+    ancestors.push(value);
+    return value;
+  };
+}
+
 function AnswerBox({
   clue,
   isSolved,
@@ -25,6 +44,7 @@ function AnswerBox({
 }) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const focusedIndex = useRef<number>(0);
+  const [debugInfo, setDebugInfo] = useState<string>("");
 
   function setFocus(index: number) {
     focusedIndex.current = index;
@@ -63,13 +83,50 @@ function AnswerBox({
     }
   }
 
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
+  const handleOnInput = (e: React.FormEvent<HTMLInputElement>) => {
+    setDebugInfo(
+      (s) =>
+        s +
+        `\r\n[OnInput + ${typeof e} + ${e.eventPhase} + ${e.target} + ${e.currentTarget} + ${e.type}]`,
+    );
+  };
+
+  const handleBeforeInput = (e: React.InputEvent<HTMLInputElement>) => {
+    setDebugInfo(
+      (s) =>
+        s +
+        `\r\n[BeforeInput + ${typeof e} + ${e.eventPhase} + ${e.target} + ${e.currentTarget} + ${e.type} ${e.data}]`,
+    );
+  };
+
+  const handleCompUpdate = (e: React.CompositionEvent<HTMLInputElement>) => {
+    setDebugInfo(
+      (s) =>
+        s +
+        `\r\n[Comp update + ${typeof e} + ${e.eventPhase} ${e.target} + ${e.currentTarget} + ${e.data}]`,
+    );
+  };
+
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDebugInfo(
+      (s) =>
+        s +
+        `\r\n[OnChange + ${typeof e} + ${e.target} + ${e.type} + ${e.currentTarget}]`,
+    );
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    setDebugInfo(
+      (s) =>
+        s +
+        `\r\n[keyboardEvent + ${typeof e} + ${e.code} + ${e.key} + ${e.currentTarget} + ${e.detail}]`,
+    );
+
     if (e.altKey || e.ctrlKey || e.metaKey) {
       return;
     }
+
+    let index = focusedIndex.current;
 
     if (e.key === "Backspace") {
       e.preventDefault();
@@ -111,47 +168,53 @@ function AnswerBox({
 
   let firstEditable = true;
   return (
-    <Box className="answer-box">
-      {userAnswers.map((letter, index) => {
-        if (revealedLetters.includes(index))
-          return (
-            <Box key={index} className="letter-box revealed">
-              {clue.answer[index]}
-            </Box>
-          );
-        else {
-          const tabIndex = firstEditable ? 0 : -1;
-          firstEditable = false;
-          return (
-            <Box key={index} className={`letter-box`}>
-              <input
-                tabIndex={tabIndex}
-                ref={(el) => (inputRefs.current[index] = el)}
-                type="text"
-                maxLength={1}
-                value={letter}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                onChange={(e) => {}} // Handled by on key down
-                onClick={() => setFocus(index)}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  border: "none",
-                  background: "transparent",
-                  textAlign: "center",
-                  fontSize: "inherit",
-                  fontFamily: "inherit",
-                  outline: "none",
-                  cursor: "text",
-                  textTransform: "uppercase",
-                }}
-              />
-            </Box>
-          );
-        }
-      })}
-      {children}
-    </Box>
+    <>
+      <Box>{debugInfo}</Box>
+      <Box className="answer-box">
+        {userAnswers.map((letter, index) => {
+          if (revealedLetters.includes(index))
+            return (
+              <Box key={index} className="letter-box revealed">
+                {clue.answer[index]}
+              </Box>
+            );
+          else {
+            const tabIndex = firstEditable ? 0 : -1;
+            firstEditable = false;
+            return (
+              <Box key={index} className={`letter-box`}>
+                <input
+                  tabIndex={tabIndex}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  type="text"
+                  maxLength={1}
+                  value={letter}
+                  onCompositionUpdate={(e) => handleCompUpdate(e)}
+                  onKeyDown={(e) => handleKeyDown(e)}
+                  onBeforeInput={handleBeforeInput}
+                  onInput={handleOnInput}
+                  onChange={handleOnChange} // Handled by on key down
+                  onClick={() => setFocus(index)}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                    background: "transparent",
+                    textAlign: "center",
+                    fontSize: "inherit",
+                    fontFamily: "inherit",
+                    outline: "none",
+                    cursor: "text",
+                    textTransform: "uppercase",
+                  }}
+                />
+              </Box>
+            );
+          }
+        })}
+        {children}
+      </Box>
+    </>
   );
 }
 
