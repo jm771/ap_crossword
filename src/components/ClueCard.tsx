@@ -63,39 +63,49 @@ function AnswerBox({
     }
   }
 
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (e.altKey || e.ctrlKey || e.metaKey) {
-      return;
-    }
-
-    if (e.key === "Backspace") {
-      e.preventDefault();
-
+  function handleKey(index: number, key: string): boolean {
+    if (key === "Backspace") {
       const currentChar = userAnswers[index];
       // Current cell is empty, move back to previous cell and delete that
       if (!currentChar) {
         index = moveFocusLeft(index);
       }
       setUserAnswer(index, "");
-    } else if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
-      e.preventDefault();
-      const letter = e.key.toUpperCase();
+    } else if (key.length === 1 && /[a-zA-Z]/.test(key)) {
+      const letter = key.toUpperCase();
       setUserAnswer(index, letter);
       moveFocusRight(index);
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
+    } else if (key === "ArrowLeft") {
       moveFocusLeft(index);
-    } else if (e.key === "ArrowRight") {
-      e.preventDefault();
+    } else if (key === "ArrowRight") {
       moveFocusRight(index);
-    } else if (e.key === "Enter") {
-      e.preventDefault();
+    } else if (key === "Enter") {
       handleSubmit();
+    } else {
+      return false;
+    }
+    return true;
+  }
+
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) {
+      return;
+    } else if (handleKey(index, e.key)) {
+      e.preventDefault();
     }
   };
+
+  function handleBeforeInput(
+    index: number,
+    e: React.InputEvent<HTMLInputElement>,
+  ) {
+    if (handleKey(index, e.data)) {
+      e.preventDefault();
+    }
+  }
 
   if (isSolved) {
     return (
@@ -131,6 +141,7 @@ function AnswerBox({
                 maxLength={1}
                 value={letter}
                 onKeyDown={(e) => handleKeyDown(index, e)}
+                onBeforeInput={(e) => handleBeforeInput(index, e)}
                 onChange={(e) => {}} // Handled by on key down
                 onClick={() => setFocus(index)}
                 style={{
