@@ -145,7 +145,7 @@ function AnswerBox({
                 value={letter}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onBeforeInput={(e) => handleBeforeInput(index, e)}
-                onChange={(e) => {}} // Handled by on key down / before input
+                onChange={() => {}} // Handled by on key down / before input
                 onFocus={() => setFocus(index)}
                 onBlur={() => setFocusedIndexState(null)}
                 style={{
