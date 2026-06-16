@@ -55,12 +55,32 @@
   text-transform: uppercase;
   background-color: white;
   transition: all 0.3s;
+  position: relative;
 }
 
 .letter-box.revealed {
   background-color: #fff9c4;
   border-color: #fbc02d;
   animation: reveal-pulse 0.5s;
+}
+
+.caret {
+  position: absolute;
+  left: 70%;
+  width: 1px;
+  height: 1em;
+  background: black;
+  animation: blink 1s infinite;
+}
+
+.letter-box:has(input[value=""]) .caret {
+  left: 50%;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 .letter-box.solved {

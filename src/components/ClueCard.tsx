@@ -23,12 +23,14 @@ function AnswerBox({
   children: ReactElement;
   handleSubmit: () => void;
 }) {
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const focusedIndex = useRef<number>(0);
+  const [focusedIndexState, setFocusedIndexState] = useState<number | null>(
+    null,
+  );
 
   function setFocus(index: number) {
     focusedIndex.current = index;
-    inputRefs.current[focusedIndex.current]?.focus();
+    setFocusedIndexState(index);
   }
 
   function moveFocusLeft(index: number): number {
@@ -64,6 +66,8 @@ function AnswerBox({
   }
 
   function handleKey(index: number, key: string): boolean {
+    index = focusedIndex.current;
+
     if (key === "Backspace") {
       const currentChar = userAnswers[index];
       // Current cell is empty, move back to previous cell and delete that
@@ -136,14 +140,14 @@ function AnswerBox({
             <Box key={index} className={`letter-box`}>
               <input
                 tabIndex={tabIndex}
-                ref={(el) => (inputRefs.current[index] = el)}
                 type="text"
                 maxLength={1}
                 value={letter}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onBeforeInput={(e) => handleBeforeInput(index, e)}
-                onChange={(e) => {}} // Handled by on key down
-                onClick={() => setFocus(index)}
+                onChange={(e) => {}} // Handled by on key down / before input
+                onFocus={() => setFocus(index)}
+                onBlur={() => setFocusedIndexState(null)}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -155,8 +159,10 @@ function AnswerBox({
                   outline: "none",
                   cursor: "text",
                   textTransform: "uppercase",
+                  caretColor: "transparent",
                 }}
               />
+              {focusedIndexState == index && <div className="caret" />}
             </Box>
           );
         }
