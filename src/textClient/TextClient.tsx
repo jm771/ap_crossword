@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
   useMemo,
+  useRef,
 } from "react";
 import MessagePart from "./MessagePart";
 import TextClientTextBox from "./TextClientTextBox";
@@ -16,6 +17,7 @@ function TextClient({ client }: { client: Client }) {
   const textClientManager = useMemo(() => new TextClientManager(), []);
   const messages = useTextClientMessages(textClientManager);
   const [followMessages, setFollowMessages] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Set up message listeners from the client
   useEffect(() => {
@@ -31,6 +33,13 @@ function TextClient({ client }: { client: Client }) {
       client.messages.off("message", messageListener);
     };
   }, [client, textClientManager]);
+
+  // Auto-scroll to bottom when new messages arrive and follow is enabled
+  useEffect(() => {
+    if (followMessages && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, followMessages]);
 
   return (
     <Box className={styles.container}>
@@ -57,6 +66,7 @@ function TextClient({ client }: { client: Client }) {
             ))}
           </Paper>
         ))}
+        <div ref={messagesEndRef} />
       </Box>
 
       <TextClientTextBox textClientManager={textClientManager} client={client} />
