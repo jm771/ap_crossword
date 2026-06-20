@@ -9,6 +9,7 @@ import { Client } from "archipelago.js";
 import TextClientManager from "./textClientManager";
 import { useTextClientMessages } from "./textClientHook";
 import styles from "./TextClient.module.css";
+import { Box, Paper, Typography, Checkbox, FormControlLabel } from "@mui/material";
 
 function TextClient({ client }: { client: Client }) {
   // Create manager instance for this client
@@ -32,30 +33,34 @@ function TextClient({ client }: { client: Client }) {
   }, [client, textClientManager]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <span className={styles.headerTitle}>Text Client</span>
-        <label className={styles.headerLabel}>
-          <input
-            type="checkbox"
-            onChange={(event) => setFollowMessages(event.target.checked)}
-            checked={followMessages}
-          />
-          {" "}Follow Messages
-        </label>
-      </div>
-      <div className={styles.messagesContainer}>
+    <Box className={styles.container}>
+      <Box className={styles.header}>
+        <Typography variant="h6" className={styles.headerTitle}>
+          Text Client
+        </Typography>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={followMessages}
+              onChange={(event) => setFollowMessages(event.target.checked)}
+              size="small"
+            />
+          }
+          label={<Typography variant="caption">Follow</Typography>}
+        />
+      </Box>
+      <Box className={styles.messagesContainer}>
         {messages.map((message) => (
-          <div key={message.key} className={styles.message}>
+          <Paper key={message.key} className={styles.message} elevation={0} variant="outlined">
             {message.parts.map((part, index) => (
               <MessagePart key={index} part={part} />
             ))}
-          </div>
+          </Paper>
         ))}
-      </div>
+      </Box>
 
       <TextClientTextBox textClientManager={textClientManager} client={client} />
-    </div>
+    </Box>
   );
 }
 

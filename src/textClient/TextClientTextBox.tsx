@@ -3,6 +3,7 @@ import { useTextClientHistory } from "./textClientHook";
 import TextClientManager from "./textClientManager";
 import { Client } from "archipelago.js";
 import styles from "./TextClientTextBox.module.css";
+import { Box, TextField, Button, CircularProgress } from "@mui/material";
 
 const TextClientTextBox = ({
   textClientManager,
@@ -52,12 +53,14 @@ const TextClientTextBox = ({
         }
     };
     return (
-        <div className={styles.container}>
-            <input
+        <Box className={styles.container}>
+            <TextField
                 value={inputText}
                 type="text"
                 placeholder="Type a message..."
-                className={styles.input}
+                variant="outlined"
+                size="small"
+                fullWidth
                 onChange={(e) => {
                     setInputText(e.target.value);
                     setHistoryIndex(-1);
@@ -72,14 +75,15 @@ const TextClientTextBox = ({
                     }
                 }}
             />
-            <button
+            <Button
+                variant="contained"
+                color="primary"
                 onClick={processInput}
                 disabled={sendingMessage}
-                className={styles.button}
             >
-                {sendingMessage ? "..." : "Send"}
-            </button>
-        </div>
+                {sendingMessage ? <CircularProgress size={20} /> : "Send"}
+            </Button>
+        </Box>
     );
 };
 export default TextClientTextBox;

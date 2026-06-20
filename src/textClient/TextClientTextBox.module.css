@@ -1,28 +1,8 @@
 .container {
   display: flex;
-  padding: 0.5em;
-  gap: 0.5em;
-  border-top: 1px solid #ccc;
+  padding: 8px;
+  gap: 8px;
+  border-top: 1px solid #e0e0e0;
   background-color: #fff;
-}
-
-.input {
-  flex-grow: 1;
-  padding: 0.5em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.button {
-  padding: 0.5em 1em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
-  background-color: #007bff;
-}
-
-.button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+  align-items: flex-start;
 }
