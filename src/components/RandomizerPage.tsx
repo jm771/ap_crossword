@@ -8,6 +8,7 @@ import { RewardsState } from "../shared/types";
 import React from "react";
 import { RandomizerGame } from "./RandomizerGame";
 import { GameHeader } from "./GameHeader";
+import TextClient from "../textClient/TextClient";
 
 export function RandomizerPage() {
   const [config, setConfig] = useState<RandomizerConfig>(
@@ -73,11 +74,14 @@ export function RandomizerPage() {
           handleOpenConfig={() => setConfigOpen(true)}
         />
         {client && (
-          <RandomizerGame
-            client={client}
-            rewards={rewardState}
-            visitedLocations={visitedLocations}
-          />
+          <>
+            <RandomizerGame
+              client={client}
+              rewards={rewardState}
+              visitedLocations={visitedLocations}
+            />
+            <TextClient client={client.getClient()} />
+          </>
         )}
       </div>
     </React.StrictMode>

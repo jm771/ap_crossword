@@ -5,8 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTextClientMessages } from "./textClientHook";
-import ServiceContext from "./serviceContext";
 import ClientMessage from "./ClientMessage";
 import { PrimaryButton } from "./buttons";
 import { Checkbox } from "./inputs";
@@ -15,11 +13,12 @@ import TextClientTextBox from "./TextClientTextBox";
 import TextClientFilterModal from "./TextClientFilterModal";
 import PanelHeader from "./PanelHeader";
 import { List, ListImperativeAPI, useDynamicRowHeight } from "react-window";
+import { Client } from "archipelago.js";
 
-const TextClient = () => {
-  const services = useContext(ServiceContext);
-  const textClientManager = services.textClientManager;
-  const messages = useTextClientMessages(textClientManager);
+function TextClient({ client }: { client: Client }) {
+  // const services = useContext(ServiceContext);
+  // const textClientManager = services.textClientManager;
+  // const messages = useTextClientMessages(textClientManager);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [followMessages, setFollowMessages] = useState(true);
   const scrollDebounceTimer = useRef(0);
@@ -94,6 +93,6 @@ const TextClient = () => {
       />
     </>
   );
-};
+}
 
 export default TextClient;
