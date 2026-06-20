@@ -34,13 +34,13 @@ html, body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .clue-card {
   background-color: white;
   transition: all 0.2s;
   padding: 16px;
+  margin: 8px;
 }
 
 .clue-card:hover {
