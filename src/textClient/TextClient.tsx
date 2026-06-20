@@ -1,97 +1,80 @@
-import React, {
-  useCallback,
-  useContext,
+import {
   useEffect,
-  useRef,
   useState,
+  useMemo,
 } from "react";
-import ClientMessage from "./ClientMessage";
-import { PrimaryButton } from "./buttons";
-import { Checkbox } from "./inputs";
-import Icon from "./icons";
+import MessagePart from "./MessagePart";
 import TextClientTextBox from "./TextClientTextBox";
-import TextClientFilterModal from "./TextClientFilterModal";
-import PanelHeader from "./PanelHeader";
-import { List, ListImperativeAPI, useDynamicRowHeight } from "react-window";
 import { Client } from "archipelago.js";
+import TextClientManager from "./textClientManager";
+import { useTextClientMessages } from "./textClientHook";
 
 function TextClient({ client }: { client: Client }) {
-  // const services = useContext(ServiceContext);
-  // const textClientManager = services.textClientManager;
-  // const messages = useTextClientMessages(textClientManager);
-  const [showFilterModal, setShowFilterModal] = useState(false);
+  // Create manager instance for this client
+  const textClientManager = useMemo(() => new TextClientManager(), []);
+  const messages = useTextClientMessages(textClientManager);
   const [followMessages, setFollowMessages] = useState(true);
-  const scrollDebounceTimer = useRef(0);
-  const listRef: React.ForwardedRef<ListImperativeAPI> = useRef(null);
-  const rowHeight = useDynamicRowHeight({ defaultRowHeight: 23 });
-  const scrollToBottom = useCallback(() => {
-    scrollDebounceTimer.current = 0;
-    if (messages.length > 0) {
-      const element = listRef.current?.element;
-      element.scrollTo({
-        behavior: "smooth",
-        top: element.scrollHeight,
-      });
-    }
-  }, [scrollDebounceTimer, messages, listRef]);
-  // Scroll to bottom when followMessages is enabled, new messages come in, or a row size change happens
+
+  // Set up message listeners from the client
   useEffect(() => {
-    if (followMessages) {
-      if (scrollDebounceTimer.current) {
-        window.clearTimeout(scrollDebounceTimer.current);
-      }
-      scrollDebounceTimer.current = window.setTimeout(scrollToBottom, 100);
-    }
-  }, [messages, followMessages, scrollToBottom]);
+    if (!client) return;
+
+    // Listen to various message types from archipelago.js
+    const messageListener = (_text: string, nodes: any[]) => {
+      textClientManager.addMessage("chat", nodes, client);
+    };
+    client.messages.on("message", messageListener);
+
+    return () => {
+      client.messages.off("message", messageListener);
+    };
+  }, [client, textClientManager]);
 
   return (
-    <>
-      <div
-        style={{
-          boxSizing: "border-box",
-          width: "100%",
-          height: "100%",
-          display: "grid",
-          gap: "0",
-          gridTemplateRows: "3em 1fr auto",
-          overflow: "hidden",
-        }}
-      >
-        <PanelHeader title={"Text Client"}>
-          <Checkbox
+    <div
+      style={{
+        boxSizing: "border-box",
+        width: "100%",
+        height: "400px",
+        display: "grid",
+        gap: "0",
+        gridTemplateRows: "3em 1fr auto",
+        overflow: "hidden",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+        backgroundColor: "#f5f5f5",
+      }}
+    >
+      <div style={{
+        padding: "0.5em 1em",
+        borderBottom: "1px solid #ccc",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "#fff",
+      }}>
+        <strong>Text Client</strong>
+        <label style={{ fontSize: "0.9em" }}>
+          <input
+            type="checkbox"
             onChange={(event) => setFollowMessages(event.target.checked)}
-            label="Follow Messages"
             checked={followMessages}
           />
-          <PrimaryButton
-            tiny
-            style={{ height: "20px" }}
-            onClick={() => setShowFilterModal(true)}
-          >
-            <Icon fontSize="12pt" type="settings" />
-          </PrimaryButton>
-        </PanelHeader>
-        <List
-          listRef={listRef}
-          rowComponent={ClientMessage}
-          rowCount={messages.length}
-          rowHeight={rowHeight}
-          rowProps={{ messages }}
-          overscanCount={5}
-          style={{
-            padding: "1em",
-            backgroundColor: "var(--background-level-0",
-            boxShadow: "inset var(--box-shadow)",
-          }}
-        />
-
-        <TextClientTextBox />
+          {" "}Follow Messages
+        </label>
       </div>
-      <TextClientFilterModal
-        open={showFilterModal}
-        onClose={() => setShowFilterModal(false)}
-      />
-    </>
+      <div style={{ flex: 1, overflow: "auto", backgroundColor: "#fff", padding: "0.5em" }}>
+        {messages.map((message) => (
+          <div key={message.key} style={{ padding: "0.25em", marginBottom: "0.25em" }}>
+            {message.parts.map((part, index) => (
+              <MessagePart key={index} part={part} />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <TextClientTextBox textClientManager={textClientManager} client={client} />
+    </div>
   );
 }
 

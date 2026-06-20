@@ -1,56 +1,18 @@
-const black = "var(--black)";
-const red = "var(--red)";
-const green = "var(--green)";
-const yellow = "var(--yellow)";
-const blue = "var(--blue)";
-const magenta = "var(--magenta)";
-const cyan = "var(--cyan)";
-const slateblue = "var(--slateblue)";
-const plum = "var(--plum)";
-const salmon = "var(--salmon)";
-const white = "var(--white)";
-const orange = "var(--orange)";
-
-const primary = "var(--background-primary)";
-const secondary = "var(--background-secondary)";
-const tertiary = "var(--background-tertiary)";
-const danger = "var(--background-danger)";
-
-const textPrimary = "var(--text-primary)";
-const background = "var(--background)";
-const filledTextPrimary = "var(--filled-text-primary)";
-
-const progressionItem = plum;
-const usefulItem = slateblue;
-const normalItem = cyan;
-const trapItem = salmon;
-
-const textClient = {
-    black,
-    red,
-    green,
-    yellow,
-    blue,
-    magenta,
-    cyan,
-    slateblue,
-    plum,
-    salmon,
-    white,
-    orange,
+// Simplified color definitions using standard CSS colors
+const colors: { [key: string]: string } = {
+    black: "#000000",
+    red: "#ff0000",
+    green: "#00ff00",
+    yellow: "#ffff00",
+    blue: "#0000ff",
+    magenta: "#ff00ff",
+    cyan: "#00ffff",
+    slateblue: "#6a5acd",
+    plum: "#dda0dd",
+    salmon: "#fa8072",
+    white: "#ffffff",
+    orange: "#ffa500",
+    underline: "#0000ff", // For underlined text, use blue
 };
 
-export {
-    primary,
-    secondary,
-    tertiary,
-    textPrimary,
-    filledTextPrimary,
-    danger,
-    background,
-    progressionItem,
-    usefulItem,
-    normalItem,
-    trapItem,
-    textClient,
-};
+export { colors };

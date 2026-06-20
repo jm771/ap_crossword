@@ -5,9 +5,7 @@ import {
   Player,
   ValidJSONColorType,
 } from "archipelago.js";
-import { globalOptionManager } from "./optionManager";
 import { randomUUID } from "./uuid";
-import MultiWorldContext from "./MultiWorldContext";
 interface APMessage {
   parts: (MessageNode | EchoMessageNode)[];
   key: string;
@@ -35,23 +33,24 @@ type MessageFilter = {
   };
 };
 
-const messageTypeCategoryMap = {
-  adminCommand: "command",
-  userCommand: "command",
-  chat: "chat",
-  serverChat: "chat",
-  collected: "status",
-  released: "status",
-  goaled: "status",
-  tagsUpdated: "status",
-  connected: "login",
-  disconnected: "login",
-  tutorial: "misc",
-  countdown: "misc",
-  itemCheated: "item",
-  itemHinted: "item",
-  itemSent: "item",
-};
+// Unused for now but kept for future filtering enhancements
+// const messageTypeCategoryMap: { [key: string]: SimpleMessageType } = {
+//   adminCommand: "command",
+//   userCommand: "command",
+//   chat: "chat",
+//   serverChat: "chat",
+//   collected: "status",
+//   released: "status",
+//   goaled: "status",
+//   tagsUpdated: "status",
+//   connected: "login",
+//   disconnected: "login",
+//   tutorial: "misc",
+//   countdown: "misc",
+//   itemCheated: "item",
+//   itemHinted: "item",
+//   itemSent: "item",
+// };
 
 class TextClientManager {
   #messages: APMessage[] = [];
@@ -77,12 +76,12 @@ class TextClientManager {
   };
 
   /** Appends a message of a specific color/style */
-  echo = (message: string, color: ValidJSONColorType) => {
+  echo = (message: string, color: ValidJSONColorType | null) => {
     const parts: EchoMessageNode[] = [
       {
         type: "echo",
         text: message,
-        color: color,
+        color: color as ValidJSONColorType,
       },
     ];
     const apMessage: APMessage = {
@@ -100,82 +99,9 @@ class TextClientManager {
     this.#callMessageListeners();
   };
 
-  #isMessageWanted = (
-    { type, item }: { type: string; player?: Player; item?: Item },
-    client: Client,
-  ): boolean => {
-    const messageFilter: MessageFilter = globalOptionManager.getOptionValue(
-      "TextClient:message_filter",
-      "global",
-    ) as MessageFilter;
-    const includeOtherSlots: boolean = globalOptionManager.getOptionValue(
-      "TextClient:IncludeMyOtherSlots",
-      "global",
-    ) as boolean;
-    const simplifiedType: SimpleMessageType = messageTypeCategoryMap[type];
-
-    if (!messageFilter.allowedTypes.includes(simplifiedType)) {
-      return false;
-    }
-
-    if (simplifiedType === "item" && item) {
-      const mySlots = includeOtherSlots
-        ? MultiWorldContext.loadedMultiWorld.slots.map(
-            (slot) => slot.slot_number,
-          )
-        : [MultiWorldContext.loadedSlot.slot_number];
-      const team = client.players.self.team;
-      let matches = false;
-      if (
-        (mySlots.includes(item.receiver.slot) && item.receiver.team === team) ||
-        (mySlots.includes(item.sender.slot) && item.sender.team === team)
-      ) {
-        if (
-          item.progression &&
-          messageFilter.itemSendFilter.own.includes("progression")
-        ) {
-          matches = true;
-        } else if (
-          item.useful &&
-          messageFilter.itemSendFilter.own.includes("useful")
-        ) {
-          matches = true;
-        } else if (
-          item.trap &&
-          messageFilter.itemSendFilter.own.includes("trap")
-        ) {
-          matches = true;
-        } else if (
-          item.filler &&
-          messageFilter.itemSendFilter.own.includes("normal")
-        ) {
-          matches = true;
-        }
-      } else {
-        if (
-          item.progression &&
-          messageFilter.itemSendFilter.others.includes("progression")
-        ) {
-          matches = true;
-        } else if (
-          item.useful &&
-          messageFilter.itemSendFilter.others.includes("useful")
-        ) {
-          matches = true;
-        } else if (
-          item.trap &&
-          messageFilter.itemSendFilter.others.includes("trap")
-        ) {
-          matches = true;
-        } else if (
-          item.filler &&
-          messageFilter.itemSendFilter.others.includes("normal")
-        ) {
-          matches = true;
-        }
-      }
-      return matches;
-    }
+  #isMessageWanted = (): boolean => {
+    // Simplified version - accept all messages by default
+    // Can be expanded later with filtering options if needed
     return true;
   };
 
@@ -196,32 +122,32 @@ class TextClientManager {
     this.#callMessageListeners();
   };
 
-  addMessage = (type: string, nodes: MessageNode[], client: Client) => {
-    if (!this.#isMessageWanted({ type }, client)) {
+  addMessage = (_type: string, nodes: MessageNode[], _client: Client) => {
+    if (!this.#isMessageWanted()) {
       return;
     }
     this.#addMessage(nodes);
   };
 
   addPlayerMessage = (
-    type: string,
-    player: Player,
+    _type: string,
+    _player: Player,
     nodes: MessageNode[],
-    client: Client,
+    _client: Client,
   ) => {
-    if (!this.#isMessageWanted({ type, player }, client)) {
+    if (!this.#isMessageWanted()) {
       return;
     }
     this.#addMessage(nodes);
   };
 
   addItemMessage = (
-    type: string,
-    item: Item,
+    _type: string,
+    _item: Item,
     nodes: MessageNode[],
-    client: Client,
+    _client: Client,
   ) => {
-    if (!this.#isMessageWanted({ type, item }, client)) {
+    if (!this.#isMessageWanted()) {
       return;
     }
     this.#addMessage(nodes);
@@ -239,8 +165,8 @@ class TextClientManager {
     this.echo(text, "underline");
     switch (text) {
       case "help": {
-        this.echo("Available commands:", null);
-        this.echo("/help: Display this helpful message", null);
+        this.echo("Available commands:", "cyan");
+        this.echo("/help: Display this helpful message", "cyan");
         break;
       }
       default: {

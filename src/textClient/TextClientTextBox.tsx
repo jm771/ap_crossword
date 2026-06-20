@@ -1,13 +1,15 @@
-import React, { useContext, useState } from "react";
-import ServiceContext from "../../contexts/serviceContext";
-import { PrimaryButton } from "../shared/buttons";
-import { Input } from "../inputs";
-import { useTextClientHistory } from "../../hooks/textClientHook";
-import Spinner from "../icons/spinner";
+import { useState } from "react";
+import { useTextClientHistory } from "./textClientHook";
+import TextClientManager from "./textClientManager";
+import { Client } from "archipelago.js";
 
-const TextClientTextBox = () => {
-    const services = useContext(ServiceContext);
-    const textClientManager = services.textClientManager;
+const TextClientTextBox = ({
+  textClientManager,
+  client
+}: {
+  textClientManager: TextClientManager;
+  client: Client;
+}) => {
     const inputHistory = useTextClientHistory(textClientManager);
     const [inputText, setInputText] = useState("");
     const [cachedInputText, setCachedInputText] = useState("");
@@ -17,7 +19,7 @@ const TextClientTextBox = () => {
         if (inputText && !sendingMessage) {
             setSendingMessage(true);
             textClientManager
-                .processInput(inputText, services.connector?.connection.client)
+                .processInput(inputText, client)
                 .finally(() => setSendingMessage(false));
             setInputText("");
             setCachedInputText("");
@@ -49,24 +51,16 @@ const TextClientTextBox = () => {
         }
     };
     return (
-        <div style={{ display: "flex", padding: "0 0.5em 0.25em 0" }}>
-            <PrimaryButton
-                onClick={processInput}
-                small
-                disabled={sendingMessage}
-            >
-                {sendingMessage ? (
-                    <Spinner style={{ height: "18px" }} />
-                ) : (
-                    "Send"
-                )}
-            </PrimaryButton>
-            <Input
-                label=""
+        <div style={{ display: "flex", padding: "0.5em", gap: "0.5em", borderTop: "1px solid #ccc", backgroundColor: "#fff" }}>
+            <input
                 value={inputText}
                 type="text"
+                placeholder="Type a message..."
                 style={{
                     flexGrow: 1,
+                    padding: "0.5em",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
                 }}
                 onChange={(e) => {
                     setInputText(e.target.value);
@@ -82,6 +76,20 @@ const TextClientTextBox = () => {
                     }
                 }}
             />
+            <button
+                onClick={processInput}
+                disabled={sendingMessage}
+                style={{
+                    padding: "0.5em 1em",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    backgroundColor: sendingMessage ? "#ccc" : "#007bff",
+                    color: "#fff",
+                    cursor: sendingMessage ? "not-allowed" : "pointer",
+                }}
+            >
+                {sendingMessage ? "..." : "Send"}
+            </button>
         </div>
     );
 };
