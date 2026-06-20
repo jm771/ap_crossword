@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTextClientHistory } from "./textClientHook";
 import TextClientManager from "./textClientManager";
 import { Client } from "archipelago.js";
+import styles from "./TextClientTextBox.module.css";
 
 const TextClientTextBox = ({
   textClientManager,
@@ -51,17 +52,12 @@ const TextClientTextBox = ({
         }
     };
     return (
-        <div style={{ display: "flex", padding: "0.5em", gap: "0.5em", borderTop: "1px solid #ccc", backgroundColor: "#fff" }}>
+        <div className={styles.container}>
             <input
                 value={inputText}
                 type="text"
                 placeholder="Type a message..."
-                style={{
-                    flexGrow: 1,
-                    padding: "0.5em",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                }}
+                className={styles.input}
                 onChange={(e) => {
                     setInputText(e.target.value);
                     setHistoryIndex(-1);
@@ -79,14 +75,7 @@ const TextClientTextBox = ({
             <button
                 onClick={processInput}
                 disabled={sendingMessage}
-                style={{
-                    padding: "0.5em 1em",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    backgroundColor: sendingMessage ? "#ccc" : "#007bff",
-                    color: "#fff",
-                    cursor: sendingMessage ? "not-allowed" : "pointer",
-                }}
+                className={styles.button}
             >
                 {sendingMessage ? "..." : "Send"}
             </button>
