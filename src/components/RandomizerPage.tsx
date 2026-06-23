@@ -29,6 +29,7 @@ export function RandomizerPage() {
   const [activePanel, setActivePanel] = useState<"game" | "chat">("game");
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [key, setKey] = useState<number>(0);
 
   useEffect(() => {
     if (config === null) return;
@@ -59,6 +60,7 @@ export function RandomizerPage() {
     );
 
     return () => newClient.disconnect();
+    setKey((x) => x + 1);
   }, [config]);
 
   const totalClues = client?.getSlotData().clues.length ?? 0;
@@ -90,7 +92,7 @@ export function RandomizerPage() {
 
   return (
     <React.StrictMode>
-      <div className="randomizer-game">
+      <div className="randomizer-game" key={key}>
         <RandomizerConfigDialog
           open={configOpen}
           onClose={() => setConfigOpen(false)}
