@@ -233,7 +233,7 @@ export function ClueCard({
 
   return (
     <Paper className="clue-card" elevation={2}>
-      <Box p={2}>
+      <Box sx={{ p: 2 }}>
         <Typography variant="body1" className="clue-text">
           {censoredClue}
         </Typography>
@@ -265,7 +265,7 @@ export function ClueCard({
         </AnswerBox>
 
         {!isSolved && (
-          <Box display="flex" style={{ marginTop: "16px", gap: "8px" }}>
+          <Box sx={{ display: "flex", marginTop: "16px", gap: "8px" }}>
             <Button
               tabIndex={-1}
               variant="contained"

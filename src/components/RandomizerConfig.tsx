@@ -97,7 +97,7 @@ export default function RandomizerConfigDialog({
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Randomizer Configuration</DialogTitle>
       <DialogContent>
-        <Box mb={3}>
+        <Box sx={{ mb: 3 }}>
           <Typography variant="h6" gutterBottom>
             Archipelago Connection
           </Typography>

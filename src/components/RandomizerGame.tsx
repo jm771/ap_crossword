@@ -39,7 +39,7 @@ export function RandomizerGame({client, rewards, visitedLocations}: RandomizerGa
     });
 
     return (
-        <Box className="clues-container" p={2}>
+        <Box className="clues-container" sx={{ p: 2 }}>
           {slotdata.clues.map((clue, index) => {
             const isSolved = visitedLocations.has(clue_id_to_loc_id(clue));
             const isUncensored = index < nRevealedClues;
