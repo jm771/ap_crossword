@@ -65,8 +65,8 @@ function AnswerBox({
     }
   }
 
-  function handleKey(key: string): boolean {
-    let index = focusedIndex.current;
+  function handleKey(index: number, key: string): boolean {
+    index = focusedIndex.current;
 
     if (key === "Backspace") {
       const currentChar = userAnswers[index];
@@ -91,16 +91,22 @@ function AnswerBox({
     return true;
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (e.altKey || e.ctrlKey || e.metaKey) {
       return;
-    } else if (handleKey(e.key)) {
+    } else if (handleKey(index, e.key)) {
       e.preventDefault();
     }
   };
 
-  function handleBeforeInput(e: React.InputEvent<HTMLInputElement>) {
-    if (handleKey(e.data)) {
+  function handleBeforeInput(
+    index: number,
+    e: React.InputEvent<HTMLInputElement>,
+  ) {
+    if (handleKey(index, e.data)) {
       e.preventDefault();
     }
   }
@@ -137,8 +143,8 @@ function AnswerBox({
                 type="text"
                 maxLength={1}
                 value={letter}
-                onKeyDown={(e) => handleKeyDown(e)}
-                onBeforeInput={(e) => handleBeforeInput(e)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onBeforeInput={(e) => handleBeforeInput(index, e)}
                 onChange={() => {}} // Handled by on key down / before input
                 onFocus={() => setFocus(index)}
                 onBlur={() => setFocusedIndexState(null)}
