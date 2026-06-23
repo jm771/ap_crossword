@@ -59,8 +59,8 @@ export function RandomizerPage() {
       },
     );
 
-    return () => newClient.disconnect();
     setKey((x) => x + 1);
+    return () => newClient.disconnect();
   }, [config]);
 
   const totalClues = client?.getSlotData().clues.length ?? 0;
