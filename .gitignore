@@ -6,7 +6,7 @@ dist/
 .claude/
 .config/
 .npm/
-
+.env
 
 # dependencies
 /node_modules
