@@ -67,6 +67,10 @@ export class ClientHandler {
   private slotData: SlotData | null;
   private errorCallback: (arg: string) => void;
 
+  getClient(): Client {
+    return this.client;
+  }
+
   constructor(
     setRewardState: setState<RewardsState>,
     setFoundLocations: setState<Set<number>>,
